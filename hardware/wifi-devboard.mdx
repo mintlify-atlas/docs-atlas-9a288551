@@ -1,0 +1,202 @@
+---
+title: 'WiFi Dev Board'
+description: 'Setup, firmware options, and usage guide for the Flipper Zero WiFi Dev Board (ESP32-S2).'
+icon: 'wifi'
+---
+
+The Flipper Zero WiFi Dev Board is an ESP32-S2-based expansion module that plugs directly into the Flipper's GPIO header. It ships with [Blackmagic firmware](https://github.com/flipperdevices/blackmagic-esp32-s2) pre-installed, which turns it into a wireless debugging probe.
+
+Official documentation is at [docs.flipperzero.one/development/hardware/wifi-debugger-module](https://docs.flipperzero.one/development/hardware/wifi-debugger-module). [Official schematics](https://docs.flipperzero.one/development/hardware/wifi-debugger-module/schematics) are also available, with a [PDF version](https://github.com/UberGuidoZ/Flipper/blob/main/Wifi_DevBoard/Flipper_Zero_WI-FI_Module_V1_Schematic.PDF) in the repository.
+
+## Quick start (Blackmagic firmware)
+
+Connect to the board wirelessly or via USB:
+
+- **WiFi:** Join SSID `blackmagic` with password `iamwitcher`
+- **USB:** Plug the dev board directly into your computer via its USB-C port
+
+---
+
+## Marauder firmware
+
+[ESP32 Marauder](https://github.com/justcallmekoko/ESP32Marauder) by JustCallMeKoko is a WiFi penetration testing tool. When installed on the dev board, it gives the Flipper Zero a capable WiFi auditing interface. See the [video walkthrough](https://www.youtube.com/watch?v=_YLTpNo5xa0) from WillStunForFood.
+
+### Installing Marauder
+
+Choose one of the three methods below. Select **ESP32-S2** as the board type when installing on the Flipper WiFi Dev Board.
+
+<Tabs>
+  <Tab title="Arduino IDE + OTA">
+    <Steps>
+      <Step title="Plug in the WiFi dev board directly to your PC">
+        Do not connect through the Flipper — connect the dev board's USB-C port directly.
+      </Step>
+      <Step title="Flash MarauderOTA via Arduino IDE">
+        Follow the [Marauder wiki starting here](https://github.com/justcallmekoko/ESP32Marauder/wiki/flipper-zerowhile). Install the ESP32 boards package and ESP32-S2 drivers in the Arduino IDE. No additional libraries are required for the OTA method.
+      </Step>
+      <Step title="Flash the Marauder Flipper bin over WiFi">
+        Use the MarauderOTA firmware you just flashed to push the final Marauder Flipper `.bin` file over WiFi. Follow [Step 8 in the install guide](https://github.com/justcallmekoko/ESP32Marauder/wiki/installing-firmware-via-ota) for OTA updates going forward (`update -w`).
+      </Step>
+    </Steps>
+  </Tab>
+
+  <Tab title="Easy flasher (Windows / Linux / Mac)">
+    Use the [FZ_Marauder_Flasher](https://github.com/UberGuidoZ/Flipper/tree/main/Wifi_DevBoard/FZ_Marauder_Flasher) tool — no Arduino IDE required. Download the flasher for your OS, plug in the dev board, and follow the on-screen prompts.
+  </Tab>
+
+  <Tab title="esptool (command line)">
+    Flash directly with `esptool`. Replace `PORT` with your serial port (e.g., `COM3` on Windows or `/dev/ttyUSB0` on Linux/Mac).
+
+    ```bash
+    esptool -p PORT -b 460800 --before default_reset --after hard_reset --chip esp32s2 \
+      write_flash --flash_mode dio --flash_freq 80m --flash_size 4MB \
+      0x10000 esp32_marauder_v0_9_9_20220628_flipper.bin
+    ```
+
+    <Note>
+      E_Surge reported that a PC restart was required before the esptool flash succeeded. If it fails, try restarting your computer before retrying.
+    </Note>
+  </Tab>
+</Tabs>
+
+### Connecting to Marauder
+
+<Note>
+  Close qFlipper before connecting — it will conflict with the serial interface.
+</Note>
+
+<Tabs>
+  <Tab title="Windows (USB)">
+    Connect through the Flipper's USB-C or directly to the dev board. Use [PuTTY](https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html) and find the COM port with [USB Device Tree View](https://www.uwe-sieber.de/usbtreeview_e.html). Set baud rate to `115200`.
+  </Tab>
+
+  <Tab title="Mac (Terminal)">
+    <Steps>
+      <Step title="List available serial ports">
+        ```bash
+        ls /dev/tty.*
+        ```
+      </Step>
+      <Step title="Identify your Flipper's port">
+        Look for an entry containing your Flipper's name, for example: `/dev/tty.usbmodemflip_XXXXX3`
+      </Step>
+      <Step title="Connect with screen">
+        ```bash
+        screen /dev/tty.usbmodemflip_XXXXX3 115200
+        ```
+        Hit reset on the dev board and output will appear. If nothing shows, try the other Flipper directory entry from the list.
+      </Step>
+    </Steps>
+  </Tab>
+
+  <Tab title="Android">
+    Many users have had success with the [Serial USB Terminal](https://play.google.com/store/apps/details?id=de.kai_morich.serial_usb_terminal) app. Connect via USB OTG and set the baud rate to `115200`.
+  </Tab>
+</Tabs>
+
+### LED indicators
+
+| LED color | Meaning    |
+|-----------|------------|
+| Blue      | Sniffing   |
+| Red       | Attacking  |
+
+### Key commands
+
+| Command        | Description                                         |
+|----------------|-----------------------------------------------------|
+| `scanap`       | Scan for nearby access points                       |
+| `stopscan`     | Stop the current scan or attack                     |
+| `sniffbeacon`  | Sniff beacon frames                                 |
+| `sniffdeauth`  | Sniff deauthentication frames                       |
+| `sniffpmkid`   | Sniff PMKID handshakes                              |
+| `clearap`      | Clear the access point list                         |
+| `list -a`      | List found access points with index numbers         |
+| `select -a x`  | Select access point at index `x`                    |
+| `attack -t deauth` | Launch a deauth attack on the selected target   |
+| `ssid`         | Manage the SSID list for beacon attacks             |
+| `update -w`    | Update Marauder firmware over WiFi (OTA)            |
+
+### SSID command details
+
+The `ssid` command manages the SSID list used for beacon attacks (e.g., `attack -t beacon -l`).
+
+```text
+ssid -a -g 4          # Randomly generate 4 SSIDs and add to list
+ssid -a -n YourSSID   # Add a specific SSID by name
+list -s               # View the current SSID list
+ssid -r #             # Remove SSID at index # from the list
+```
+
+Full beacon attack sequence (from cococode):
+
+```text
+ssid -a -n (name you want to show)
+list -s
+select -s (index from list)
+attack -t beacon -l
+attack -t rickroll
+```
+
+### Example deauth attack profile
+
+<Steps>
+  <Step title="Scan for access points">
+    ```text
+    scanap
+    ```
+    Wait until you see target networks appear.
+  </Step>
+  <Step title="Stop the scan">
+    ```text
+    stopscan
+    ```
+  </Step>
+  <Step title="List found access points">
+    ```text
+    list -a
+    ```
+    Note the index number of your target.
+  </Step>
+  <Step title="Select the target">
+    ```text
+    select -a x
+    ```
+    Replace `x` with the index number from the previous step.
+  </Step>
+  <Step title="Launch the deauth attack">
+    ```text
+    attack -t deauth
+    ```
+  </Step>
+  <Step title="Stop when done">
+    ```text
+    stopscan
+    ```
+  </Step>
+</Steps>
+
+### Troubleshooting scrambled serial output
+
+If the terminal output looks garbled or unreadable, the baud rate is likely mismatched. Set your terminal to **115200 baud**.
+
+If the issue persists, reflash the Flipper firmware — start with official firmware to test, then switch to a custom build if desired.
+
+---
+
+## Other ESP32 projects
+
+<CardGroup cols={2}>
+  <Card title="ESP32 Wi-Fi Pentest Tool" icon="shield-halved" href="https://github.com/FroggMaster/ESP32-Wi-Fi-Penetration-Tool">
+    Frog's write-up with automated flashing — effectively a double-click install thanks to built-in error checking and automation.
+  </Card>
+  <Card title="ESP32 WiFi Scanner Module" icon="magnifying-glass" href="https://github.com/SequoiaSan/FlipperZero-WiFi-Scanner_Module">
+    By SequoiaSan. Originally for ESP8266, ported to the Flipper WiFi Dev Board. Includes a [web flasher](https://sequoiasan.github.io/FlipperZero-WiFi-Scanner_Module/) to skip the Arduino IDE.
+  </Card>
+  <Card title="ESP8266 WiFi Deauther Module" icon="bolt" href="https://github.com/SequoiaSan/FlipperZero-Wifi-ESP8266-Deauther-Module">
+    By SequoiaSan. Designed for the ESP8266 (not the dev board). Includes a [web flasher](https://sequoiasan.github.io/FlipperZero-Wifi-ESP8266-Deauther-Module/) and web interface at `http://192.168.4.1` (SSID: `pwned`, password: `deauther`).
+  </Card>
+  <Card title="ESP32 Flasher from Flipper" icon="microchip" href="https://github.com/0xchocolate/flipperzero-esp-flasher">
+    By 0xchocolate. Flash an ESP32 directly from the Flipper — no computer required. Files available [in the repository](https://github.com/UberGuidoZ/Flipper/tree/main/Wifi_DevBoard/apps_data/esp_flasher) with a [video walkthrough](https://youtu.be/Kme-yWL14N8) by TalkingSasquach.
+  </Card>
+</CardGroup>

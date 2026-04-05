@@ -1,0 +1,84 @@
+---
+title: "Setup & first steps"
+description: "How to transfer files from this repository to your Flipper Zero using qFlipper, and how to organize your SD card."
+---
+
+This guide covers how to get files from this repository onto your Flipper Zero. The process involves downloading files from GitHub and transferring them to your device's SD card using qFlipper.
+
+## Download qFlipper
+
+qFlipper is the official desktop application for managing your Flipper Zero. It handles firmware updates, file transfers, and SD card browsing.
+
+<Card title="Download qFlipper" icon="download" href="https://flipperzero.one/update">
+  Available for Windows, macOS, and Linux. Connect your Flipper via USB-C after installing.
+</Card>
+
+## First-time setup
+
+<Steps>
+  <Step title="Install qFlipper and connect your Flipper Zero">
+    Download and install qFlipper from the official site. Connect your Flipper Zero to your computer using a USB-C cable. qFlipper will detect the device automatically and prompt you to update firmware if a newer version is available.
+  </Step>
+  <Step title="Update to the latest firmware">
+    In qFlipper, click **Update** to install the latest version of your chosen firmware. Keeping firmware current is important because FAP (application) files must match the firmware API version to load correctly.
+  </Step>
+  <Step title="Download files from this repository">
+    To save a file from GitHub, navigate to the file you want, then right-click the **Raw** button and choose **Save link as**. This downloads the actual file rather than the GitHub HTML page.
+
+    <Tip>
+      To download a whole folder rather than file by file, use [DownGit](https://uberguidoz.github.io/DownGit/) — paste a GitHub folder URL and it will package the contents as a zip.
+    </Tip>
+  </Step>
+  <Step title="Open the SD card file browser in qFlipper">
+    In qFlipper, click the **SD card** tab (file manager icon) to browse your Flipper's SD card over USB. You can drag and drop files directly into the appropriate folders.
+  </Step>
+  <Step title="Place files in the correct SD card folders">
+    Copy downloaded files into the matching folder on the SD card. The Flipper looks for specific file types in specific locations — see the folder structure below.
+  </Step>
+</Steps>
+
+## SD card folder structure
+
+Each type of content belongs in a specific folder on the SD card. The Flipper's menus are organized to match this structure.
+
+<Tabs>
+  <Tab title="Wireless & signals">
+    | Folder | Content |
+    |--------|---------|
+    | `subghz/` | Sub-GHz signal captures (`.sub` files) |
+    | `infrared/` | Infrared remote files (`.ir` files) |
+    | `nfc/` | NFC card captures (`.nfc` files) |
+    | `lfrfid/` | Low-frequency RFID captures (`.rfid` files) |
+    | `ibutton/` | iButton key files (`.ibtn` files) |
+  </Tab>
+  <Tab title="Scripts & apps">
+    | Folder | Content |
+    |--------|---------|
+    | `badusb/` | BadUSB DuckyScript payloads (`.txt` files) |
+    | `apps/` | FAP plugin files (`.fap` files) |
+  </Tab>
+  <Tab title="Customization">
+    | Folder | Content |
+    |--------|---------|
+    | `dolphin/` | Custom animations and graphics |
+    | `music_player/` | Music files for the music player app |
+  </Tab>
+</Tabs>
+
+<Note>
+  The `apps/` folder can contain subdirectories. You can organize FAP files into any folder structure that makes sense to you — the Flipper's Applications menu will show those folders as categories.
+</Note>
+
+## Transferring files with qFlipper
+
+In the qFlipper file browser:
+
+1. Navigate to the target folder on the SD card (for example, `infrared/`).
+2. Drag files from your computer's file explorer into the qFlipper window, or use the upload button.
+3. The Flipper will reflect the new files immediately — no restart needed.
+
+You can also use the **Flipper Mobile App** (iOS and Android) to transfer files wirelessly over Bluetooth, without connecting via USB.
+
+<Warning>
+  FAP application files (`.fap`) must match the API version of your installed firmware. If an app fails to load, download the FAP built for your specific firmware variant. See the [firmware options guide](/getting-started/firmware-options) for details on which FAPs work with which firmware.
+</Warning>

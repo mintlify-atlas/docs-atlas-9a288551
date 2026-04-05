@@ -1,0 +1,82 @@
+---
+title: "Dolphin level"
+description: "Set your Flipper Zero's Dolphin XP level instantly by replacing the .dolphin.state file, or use DroomOne's Python script to manage it programmatically."
+---
+
+The Flipper Zero tracks a companion character called the dolphin, which levels up as you use different features of the device. Higher levels unlock additional idle-screen animations. If your level is moving too slowly — or you want to test animations gated behind higher levels — you can replace the `.dolphin.state` file directly.
+
+## How Dolphin level affects animations
+
+Each animation in `dolphin/manifest.txt` has a `MinLevel` and `MaxLevel` field. Animations only appear when your current Dolphin level falls within that range. Leveling up unlocks animations that were previously hidden.
+
+The `butthurt` value is a separate mood metric (0 = happy, 14 = unhappy). Animations also have `MinButthurt` and `MaxButthurt` fields — so an animation set for a high butthurt range will only appear when the dolphin is in a "bad mood." Using your Flipper regularly keeps butthurt low.
+
+<Note>
+  After replacing `.dolphin.state`, you must restart the Flipper for the new level to take effect.
+</Note>
+
+## Available state files
+
+This repository includes six pre-built state files:
+
+| File | Effect | Internal value |
+|---|---|---|
+| `.dolphin.state.ZERO` | Reset to zero — starting from scratch | 0 |
+| `.dolphin.state.TOP1` | One action away from level 2 | 734 |
+| `.dolphin.state.LVL2a` | Instant level 2 on reboot | 735 |
+| `.dolphin.state.TOP2` | One action away from level 3 | 2939 |
+| `.dolphin.state.LVL3a` | Instant level 3 on reboot | 2940 |
+| `.dolphin.state.FIN3` | Maximum level — nothing left to unlock | 2941+ |
+
+The internal values were produced with [DroomOne's Python script](https://github.com/DroomOne/FlipperScripts), which lets you set any arbitrary XP value.
+
+## How to apply a state file
+
+<Steps>
+  <Step title="Download the desired state file">
+    Download the `.dolphin.state.*` file that matches your target level from this repository. Note that GitHub may strip the leading period on some systems — verify the filename still starts with `.` after downloading.
+  </Step>
+  <Step title="Rename the file">
+    Rename the downloaded file to exactly `.dolphin.state` (no extension suffix).
+  </Step>
+  <Step title="Open qFlipper and go to the file browser">
+    Connect your Flipper to your computer using qFlipper and open the file browser panel.
+  </Step>
+  <Step title="Navigate to Internal Flash">
+    Double-click **Internal Flash** in the file browser. Enable hidden files to see `.dolphin.state`.
+  </Step>
+  <Step title="Back up your existing state">
+    Right-click the existing `.dolphin.state` file and rename it to something like `.dolphin.state.mine` so you can restore it later.
+  </Step>
+  <Step title="Drop in the new state file">
+    Drag and drop your renamed `.dolphin.state` file into the Internal Flash directory.
+  </Step>
+  <Step title="Restart Flipper">
+    [Reboot your Flipper Zero](https://docs.flipperzero.one/basics/reboot). The new Dolphin level takes effect immediately on startup.
+  </Step>
+</Steps>
+
+## Reverting to your original state
+
+To go back to your previous level: delete the current `.dolphin.state`, rename your backup (e.g., `.dolphin.state.mine`) back to `.dolphin.state`, and restart the Flipper. You can repeat this process as many times as you like.
+
+## Programmatic level management
+
+<Card title="DroomOne — FlipperScripts" icon="code" href="https://github.com/DroomOne/FlipperScripts">
+  A Python script for setting any specific XP value programmatically. All state files in this repository were generated with this script using the values shown in the table above.
+</Card>
+
+## Firmware-specific state files
+
+<AccordionGroup>
+  <Accordion title="RogueMaster">
+    RogueMaster adds additional Dolphin levels beyond the standard three. State files for RogueMaster's extended level system are available in the `RogueMaster/` subfolder of the Dolphin_Level directory.
+  </Accordion>
+  <Accordion title="Xtreme (Archived)">
+    State files for Xtreme firmware are in the `Xtreme (Archived)/` subfolder.
+
+    <Warning>
+      Xtreme firmware is **archived and no longer maintained**. These state files are kept for reference only. Do not use Xtreme firmware for new setups.
+    </Warning>
+  </Accordion>
+</AccordionGroup>

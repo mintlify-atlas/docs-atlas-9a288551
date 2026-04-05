@@ -1,0 +1,142 @@
+---
+title: "Building applications (FAPs)"
+description: "Tools, tutorials, and hello-world examples for creating your own Flipper Application Packages."
+---
+
+Building your own Flipper Application Package (FAP) lets you run custom code directly on your Flipper Zero. FAPs are written in C (or Rust) and compiled against the firmware's API, then loaded from the SD card at runtime.
+
+## Build tools
+
+<CardGroup cols={2}>
+  <Card title="uFBT — micro Flipper Build Tool" icon="wrench" href="https://github.com/flipperdevices/flipperzero-ufbt">
+    The primary tool for building FAPs. uFBT handles downloading the correct SDK for your target firmware, compiling your app, and deploying it to a connected Flipper.
+  </Card>
+  <Card title="Arduino IDE" icon="microchip" href="https://www.arduino.cc/en/software">
+    Used for companion apps running on ESP32 or ESP8266 modules connected to the Flipper's GPIO header. Not used for FAPs themselves, but common for hardware companion projects.
+  </Card>
+</CardGroup>
+
+## Setting up your build environment
+
+<Steps>
+  <Step title="Install uFBT">
+    Follow the installation instructions in the [uFBT repository](https://github.com/flipperdevices/flipperzero-ufbt). uFBT is the officially supported build tool and handles SDK management automatically.
+  </Step>
+  <Step title="Create your app directory">
+    Create a new folder for your project. At minimum you need an `application.fam` manifest file and at least one `.c` source file.
+  </Step>
+  <Step title="Write your application">
+    Implement your app using the Flipper SDK APIs. See the hello world examples below for a starting point, and the official documentation for the full API surface.
+  </Step>
+  <Step title="Build with uFBT">
+    Run `ufbt` in your project directory. uFBT will download the appropriate SDK if needed and produce a `.fap` file in the `dist/` folder.
+  </Step>
+  <Step title="Deploy to Flipper">
+    Copy the resulting `.fap` to your SD card's `apps/` folder, or use `ufbt launch` to build and deploy over USB in one step.
+  </Step>
+</Steps>
+
+## Official documentation
+
+<Card title="Apps on SD card — official docs" icon="file-lines" href="https://github.com/flipperdevices/flipperzero-firmware/blob/dev/documentation/AppsOnSDCard.md">
+  The official Flipper Zero documentation covering the FAP format, the `application.fam` manifest, API versioning, and how the loader works.
+</Card>
+
+## Tutorials
+
+<CardGroup cols={2}>
+  <Card title="DroomOne — Flipper Plugin Tutorial" icon="graduation-cap" href="https://github.com/DroomOne/Flipper-Plugin-Tutorial">
+    A step-by-step tutorial covering the basics of writing a Flipper plugin, from project structure to drawing on the screen.
+  </Card>
+  <Card title="giolaq — Hello Flipper" icon="pen" href="https://blog.giolaq.dev/hello-world-of-flipper-zero">
+    Blog walkthrough of building a first Flipper app. The accompanying source code is in the [helloflipper repository](https://github.com/giolaq/helloflipper).
+  </Card>
+  <Card title="csBlueChip — Plugin Howto" icon="book-open" href="https://github.com/csBlueChip/FlipperZero_plugin_howto">
+    Detailed plugin how-to guide from csBlueChip covering common patterns and pitfalls.
+  </Card>
+</CardGroup>
+
+<Warning>
+  The dev documentation at flipper.atmanos.com is **outdated**. Refer to the official firmware repository and the uFBT documentation instead for current API information.
+</Warning>
+
+## Hello world examples
+
+These minimal apps are useful as starting points or to verify your build environment is working.
+
+<AccordionGroup>
+  <Accordion title="zmactep — flipperzero-hello-world (C)">
+    A minimal C hello world FAP: [github.com/zmactep/flipperzero-hello-world](https://github.com/zmactep/flipperzero-hello-world)
+  </Accordion>
+  <Accordion title="ASoldo — hello_world (C)">
+    Another clean C hello world example: [github.com/ASoldo/hello_world](https://github.com/ASoldo/hello_world)
+  </Accordion>
+  <Accordion title="mervburger — flipper_helloworld (C)">
+    Hello world with additional comments explaining the structure: [github.com/mervburger/flipper_helloworld](https://github.com/mervburger/flipper_helloworld)
+  </Accordion>
+  <Accordion title="baakeydow — Rust hello world">
+    A hello world FAP implemented in Rust using the flipper0 crate: [github.com/baakeydow/flipper0-rust-hello-world](https://github.com/baakeydow/flipper0-rust-hello-world)
+  </Accordion>
+</AccordionGroup>
+
+## Basic app structure
+
+Every FAP needs two things: a manifest and at least one C source file.
+
+```c hello_world.c
+#include <furi.h>
+#include <gui/gui.h>
+#include <gui/view_port.h>
+#include <input/input.h>
+
+static void draw_callback(Canvas* canvas, void* ctx) {
+    UNUSED(ctx);
+    canvas_clear(canvas);
+    canvas_set_font(canvas, FontPrimary);
+    canvas_draw_str(canvas, 10, 32, "Hello, Flipper!");
+}
+
+static void input_callback(InputEvent* event, void* ctx) {
+    FuriMessageQueue* queue = ctx;
+    furi_message_queue_put(queue, event, FuriWaitForever);
+}
+
+int32_t hello_world_app(void* p) {
+    UNUSED(p);
+    FuriMessageQueue* queue = furi_message_queue_alloc(8, sizeof(InputEvent));
+
+    ViewPort* vp = view_port_alloc();
+    view_port_draw_callback_set(vp, draw_callback, NULL);
+    view_port_input_callback_set(vp, input_callback, queue);
+
+    Gui* gui = furi_record_open(RECORD_GUI);
+    gui_add_view_port(gui, vp, GuiLayerFullscreen);
+
+    InputEvent event;
+    while(furi_message_queue_get(queue, &event, FuriWaitForever) == FuriStatusOk) {
+        if(event.type == InputTypeShort && event.key == InputKeyBack) break;
+    }
+
+    gui_remove_view_port(gui, vp);
+    furi_record_close(RECORD_GUI);
+    view_port_free(vp);
+    furi_message_queue_free(queue);
+    return 0;
+}
+```
+
+```python application.fam
+App(
+    appid="hello_world",
+    name="Hello World",
+    apptype=FlipperAppType.EXTERNAL,
+    entry_point="hello_world_app",
+    requires=["gui"],
+    stack_size=1 * 1024,
+    fap_category="Examples",
+)
+```
+
+<Note>
+  The `entry_point` in `application.fam` must match the function name in your C file. The `appid` must be unique across all installed FAPs.
+</Note>

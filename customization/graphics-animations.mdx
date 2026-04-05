@@ -1,0 +1,106 @@
+---
+title: "Graphics & animations"
+description: "Install custom dolphin animations on your Flipper Zero, edit speech bubbles and display weights, and find community animation collections."
+---
+
+Flipper Zero displays animated sequences on its idle screen featuring the dolphin companion character. These animations live on the SD card in the `dolphin/` folder and can be swapped, edited, or created from scratch without modifying firmware.
+
+## How animations work
+
+Each animation is a folder inside `dolphin/` on the SD card. The folder contains:
+
+- **BM files** — bitmap frame images that make up the animation sequence
+- **`meta.txt`** — defines the frame sequence, playback speed, and any speech bubble text
+
+A `manifest.txt` file in the root of the `dolphin/` folder controls which animations are active and how frequently each one appears.
+
+### BM file format
+
+BM (bitmap) files are raw 1-bit image frames at 128×64 pixels — the native resolution of the Flipper's monochrome display. Each frame is stored as a flat binary of pixel data, one bit per pixel, with no header. Animation tools and the GUI editor handle this format automatically.
+
+## Installing animations
+
+<Steps>
+  <Step title="Download an animation folder">
+    Each animation is a self-contained folder. Download the folder containing the BM frames and `meta.txt` file.
+  </Step>
+  <Step title="Place it in dolphin/ on your SD card">
+    Connect your Flipper to qFlipper. In the file browser, navigate to the SD card and open (or create) the `dolphin/` folder. Copy your animation folder into it.
+  </Step>
+  <Step title="Update manifest.txt">
+    Open `manifest.txt` in the root of the `dolphin/` folder. Add an entry for your new animation, or increase its `Weight` value to make it appear more frequently.
+  </Step>
+  <Step title="Reboot to apply">
+    Restart your Flipper Zero. The new animation will appear on the idle screen according to its weight and level settings.
+  </Step>
+</Steps>
+
+## Editing manifest.txt
+
+`manifest.txt` in `dolphin/` controls all active animations. Each entry has several fields you can tune:
+
+| Field | Description |
+|---|---|
+| `Name` | Folder name of the animation |
+| `Weight` | How often this animation appears relative to others. Higher value = more frequent. |
+| `MinButthurt` / `MaxButthurt` | Butthurt range in which this animation is shown. Butthurt is an internal mood value (0 = happy, 14 = unhappy). |
+| `MinLevel` / `MaxLevel` | Dolphin level range required to display this animation. |
+
+<Tip>
+  To force a specific animation to appear almost exclusively, set its `Weight` to a high number (e.g., 100) and set all others to 1.
+</Tip>
+
+## Editing speech bubbles
+
+If an animation includes speech bubbles, you can change the text:
+
+<Steps>
+  <Step title="Open the animation's meta.txt">
+    Navigate to the animation's folder inside `dolphin/` and open `meta.txt`.
+  </Step>
+  <Step title="Find the bubble text fields">
+    Look for `BubbleSlots` and the associated `Text` entries. Each bubble slot has its own text string.
+  </Step>
+  <Step title="Edit and save">
+    Change the text to anything you like. Save the file back to the SD card.
+  </Step>
+  <Step title="Reboot">
+    Restart the Flipper to see your changes. The new text appears the next time that animation runs.
+  </Step>
+</Steps>
+
+<Note>
+  The `MaxLevel` and butthurt values in `manifest.txt` interact with your Dolphin level. If an animation isn't appearing, check that your current level meets the `MinLevel` requirement. See [Dolphin Level](/customization/dolphin-level) for how to adjust your level.
+</Note>
+
+## Cycling animations quickly
+
+<Tip>
+  On **RogueMaster** and **Momentum** firmware, you can press and hold the center button on the idle screen to cycle through available animations immediately, without waiting for the natural rotation.
+</Tip>
+
+## GUI editor
+
+<Card title="FUI Editor — drag and drop animation editor" icon="paintbrush" href="https://ilin.pt/stuff/fui-editor/">
+  A browser-based GUI editor for creating and editing Flipper animations. Draw frames directly, import existing BM files, and export the full animation folder ready to drop on your SD card.
+</Card>
+
+## Animation collections
+
+<CardGroup cols={2}>
+  <Card title="Kuronons — FZ_graphics" icon="image" href="https://github.com/Kuronons/FZ_graphics">
+    A well-organized collection of high-quality custom animations and graphics ready to install.
+  </Card>
+  <Card title="TalkingSasquach — make your own" icon="book-open" href="https://github.com/skizzophrenic/Talking-Sasquach">
+    An excellent write-up on creating animations from scratch, plus TalkingSasquach's own animation collection.
+  </Card>
+  <Card title="mnenkov — massive BM collection" icon="folder-open" href="https://github.com/mnenkov/flipper-zero-animations">
+    A large collection of BM animation files covering a wide range of styles and themes.
+  </Card>
+  <Card title="stopoxy — FZAnimations" icon="layers" href="https://github.com/stopoxy/FZAnimations">
+    Additional animation files for more variety on the idle screen.
+  </Card>
+  <Card title="HexxedBitHeadz — Flipper Zero Wallpaper" icon="image" href="https://github.com/HexxedBitHeadz/FlipperZeroWallpaper">
+    Wallpaper-style static and animated graphics for the Flipper display.
+  </Card>
+</CardGroup>

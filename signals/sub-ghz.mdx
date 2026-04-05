@@ -1,0 +1,164 @@
+---
+title: "Sub-GHz signals"
+description: "SUB file format, supported frequencies, modulation types, and the full library of Sub-GHz signal files for Flipper Zero."
+---
+
+The Sub-GHz collection is a large library of `.sub` files captured from or created for real-world devices — garage door openers, doorbells, remote outlets, ceiling fans, vehicles, and more. Some files have been tested; others are community contributions.
+
+<Note>
+  Special thanks to [FalsePhilosopher](https://github.com/FalsePhilosopher) for organization help, and to everyone who shares files with the community.
+</Note>
+
+## What is a .sub file?
+
+A `.sub` file is a Flipper Zero Sub-GHz signal file. It stores the frequency, modulation preset, and either a decoded protocol key or a raw pulse recording.
+
+There are two variants:
+
+- **Key file** — stores a decoded protocol (e.g. Princeton, CAME, NEC). Flipper re-encodes and transmits it cleanly.
+- **RAW file** — stores exact pulse timings recorded from a real remote. Flipper replays those timings verbatim.
+
+### Key file format
+
+```text
+Filetype: Flipper SubGhz Key File
+Version: 1
+Frequency: 433920000
+Preset: FuriHalSubGhzPresetOok650Async
+Protocol: Princeton
+Bit: 24
+Key: 00 00 00 00 00 9A 25 A8
+TE: 203
+```
+
+### RAW file format
+
+Each value in `RAW_Data` is a pulse duration in **microseconds**. Positive values mean the signal is **on** (transmitting); negative values mean the signal is **off** (silence/pause).
+
+```text
+Filetype: Flipper SubGhz RAW File
+Version: 1
+Frequency: 433920000
+Preset: FuriHalSubGhzPresetOok650Async
+Protocol: RAW
+RAW_Data: 3607 -100 1789 -66 950 -200 ...
+```
+
+**Example:** `3607 -100 1789 -66` means transmit for 3607 µs, pause for 100 µs, transmit for 1789 µs, pause for 66 µs.
+
+This is sometimes called OOK — **On Off Keying** — because on = 1 and off = 0.
+
+<Tip>
+  Plot any `.sub` or `.ir` file visually using the [Flipper Lab Pulse Plotter](https://lab.flipper.net/pulse-plotter). It graphs the pulse train and helps you decode patterns.
+</Tip>
+
+## Supported frequencies
+
+The Flipper Zero uses a **CC1101** Sub-GHz transceiver chip. Texas Instruments defines three official frequency bands for this chip:
+
+| Band | Range |
+|------|-------|
+| Low  | 300–348 MHz |
+| Mid  | 387–464 MHz |
+| High | 779–928 MHz |
+
+Unofficially extended ranges (from the CC1111 used in the YARD Stick One) are 281–361 MHz, 378–481 MHz, and 749–962 MHz. These require firmware modifications to unlock.
+
+<Warning>
+  **Going outside the officially supported CC1101 frequencies may damage your Flipper's amplifier.** The manufacturer notes that operating outside the specified bands can cause VCO/PLL lock failures, unwanted emissions, reduced output power, and — with sustained antenna mismatch — permanent chip damage. Understand what you are doing before attempting extended frequencies.
+</Warning>
+
+### Region frequency limits
+
+Official firmware enforces per-region transmit limits based on the region code programmed into your device:
+
+| Region | Allowed transmit frequencies (MHz) | Shipped to |
+|--------|-------------------------------------|------------|
+| R01    | 433.05–434.79; 868.15–868.55        | EU, UK, RU, UA, BY, BA, PF, VA, IS, KZ, LI, MD, MK, NO, RS, CH, TR |
+| R02    | 304.10–321.95; 433.05–434.79; 915.00–928.00 | US, CA, AU, NZ, MX, BR, CL, AR, UM |
+| R03    | 312.00–315.25; 920.50–923.50        | Rest of world |
+
+Third-party firmware (Unleashed, RogueMaster) allows unofficially supported frequencies via the `extend_range` and `dangerous_settings` files.
+
+## Modulation types
+
+The preset field in a `.sub` file controls modulation. Two widths are available for both AM (OOK) and FM (2FSK):
+
+<AccordionGroup>
+  <Accordion title="AM650 and FM650 — wide bandwidth">
+    These presets use a wider frequency deviation (650 kHz for AM, wider filter for FM). They cover a broader range of signal variations at the cost of reduced pickup distance. Use these when you are not sure of the exact carrier parameters, or when the signal source drifts.
+  </Accordion>
+  <Accordion title="AM270 and FM270 — narrow bandwidth">
+    These presets use a narrower filter (270 kHz). They provide cleaner reception and slightly better range when the signal is well-centered on the target frequency. Use these for known-good frequencies with stable carriers.
+  </Accordion>
+</AccordionGroup>
+
+The [official Flipper Sub-GHz read-raw documentation](https://docs.flipperzero.one/sub-ghz/read-raw) covers modulation selection in detail.
+
+## Signal categories
+
+The Sub-GHz library is organized into subdirectories by device type:
+
+<CardGroup cols={2}>
+  <Card title="Garages" icon="warehouse" href="https://github.com/UberGuidoZ/Flipper/tree/main/Sub-GHz/Garages">
+    Gate and garage door signals, plus deBruijn/OpenSesame bruteforce files.
+  </Card>
+  <Card title="Doorbells" icon="bell" href="https://github.com/UberGuidoZ/Flipper/tree/main/Sub-GHz/Doorbells">
+    Wireless doorbell signals from a wide range of manufacturers.
+  </Card>
+  <Card title="Remote outlet switches" icon="plug" href="https://github.com/UberGuidoZ/Flipper/tree/main/Sub-GHz/Remote_Outlet_Switches">
+    Smart plug and remote outlet switch signals.
+  </Card>
+  <Card title="Ceiling fans" icon="fan" href="https://github.com/UberGuidoZ/Flipper/tree/main/Sub-GHz/Ceiling_Fans">
+    Remote-controlled ceiling fan signals.
+  </Card>
+  <Card title="Vehicles" icon="car" href="https://github.com/UberGuidoZ/Flipper/tree/main/Sub-GHz/Vehicles">
+    Automotive key fob and remote start signals.
+  </Card>
+  <Card title="Smart home remotes" icon="house-signal" href="https://github.com/UberGuidoZ/Flipper/tree/main/Sub-GHz/Smart_Home_Remotes">
+    Z-Wave, proprietary home automation remotes.
+  </Card>
+  <Card title="Restaurant pagers" icon="pager" href="https://github.com/UberGuidoZ/Flipper/tree/main/Sub-GHz/Restaurant_Pagers">
+    Guest pager signals used in restaurants.
+  </Card>
+  <Card title="Motion sensors" icon="radar" href="https://github.com/UberGuidoZ/Flipper/tree/main/Sub-GHz/Motion_Sensors">
+    Wireless motion sensor signals.
+  </Card>
+</CardGroup>
+
+Other categories include: Adjustable Beds, Air Filtration, Cable/Satellite Boxes, Cooker Hoods, Customer Assistance Buttons, Door Entry/Motion Sensor Chimes, Fans, Fog Machines, Gates, Handicap openers, LED controllers, Multimedia remotes, PMR446, POCSAG, Projection Screens, Ring LPD channels, Roadblock bollards, Smoke Alarms, Sprinklers, Thermostats, TouchTunes, Training Collars, Vacuums, and Weather Stations.
+
+## Garages: OpenSesame and deBruijn files
+
+The `Garages/deBruijn` subfolder contains files for brute-forcing fixed-code garage door openers.
+
+A **de Bruijn sequence** is an efficient way to test every possible code by overlapping combinations. For example, instead of sending `00`, `01`, `10`, `11` separately, you transmit `00110` — which contains all four 2-bit patterns as substrings.
+
+OpenSesame files use this technique to step through every code in a fixed-code system without needing to know the code in advance.
+
+<Note>
+  Additional context on garage door systems: [RemoteDup](https://www.ifoedit.com/RemoteDup.html), [GarageHack](https://www.ifoedit.com/garagehack.html), and [LiftMaster learn button colors](https://support.dealer.liftmaster.com/articles/Knowledge/Determine-the-Color-of-the-Learn-Button-on-Your-Garage-Door-Opener).
+</Note>
+
+## Generating your own SUB files
+
+[Flipper Maker](https://flippermaker.github.io/) lets you generate `.sub` files in your browser for common protocols including MegaCode, Firefly, and others. No capture hardware required.
+
+For more advanced signal work, the community has built several additional tools:
+
+- **[flipper_toolbox by evilpete](https://github.com/evilpete/flipper_toolbox)** — script-based file format generators and converters, including custom modulation creation
+- **[flipper_sub_plotters_comparers by ShotokanZH](https://github.com/ShotokanZH/flipper_sub_plotters_comparers)** — command-line plotter for comparing `.sub` files
+
+## Analyzing signals
+
+<Steps>
+  <Step title="Open the pulse plotter">
+    Go to [lab.flipper.net/pulse-plotter](https://lab.flipper.net/pulse-plotter) in your browser.
+  </Step>
+  <Step title="Upload or paste your file">
+    Upload the `.sub` file directly, or paste the `RAW_Data` values into the input field.
+  </Step>
+  <Step title="Inspect the waveform">
+    The plotter renders a graph of on/off pulses. Look for repeating patterns — these indicate the data payload. Consistent preamble pulses appear at the start of most fixed-code signals.
+  </Step>
+</Steps>

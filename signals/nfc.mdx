@@ -1,0 +1,69 @@
+---
+title: "NFC files"
+description: "Mifare Classic key dictionaries, Amiibo emulation files, picopass/HID files, and tools for working with NFC on Flipper Zero."
+---
+
+The NFC section covers Mifare Classic key dictionaries, Nintendo Amiibo emulation files, HID/picopass card files, fun NFC files, and tools for reading and cracking NFC cards.
+
+## mf_classic_dict — expanded key dictionary
+
+The `mf_classic_dict` folder contains an upgraded Mifare Classic key dictionary that nearly **triples** the number of available keys compared to the default Flipper dictionary. With it, Flipper can attempt more keys automatically during a read, often recovering all 32 sector keys without additional tools.
+
+Sources and comments are included in the dictionary file itself so you can trace where each key came from.
+
+<Tip>
+  When reading a Mifare Classic card that Flipper can only partially read, install the expanded dictionary first. Many cards that appear locked become fully readable.
+</Tip>
+
+### Troubleshooting Mifare Classic reads
+
+If you are having trouble reading a card, [noproto's Mifare Classic write-up](https://gist.github.com/noproto/63f5dea3f77cae4393a4aa90fc8ef427#file-mifareclassic-md) is a thorough guide covering the read process, common failure modes, and how to recover keys.
+
+### Cracking unknown keys with mfkey32v2
+
+If the expanded dictionary does not recover all sector keys, you can use **mfkey32v2** to crack them from the authentication challenge-response pairs that Flipper captures during failed read attempts.
+
+[Equip's mfkey32v2](https://github.com/equipter/mfkey32v2) implements the mfkey32 attack. Flipper logs the nonce pairs during a read attempt; feed those logs to mfkey32v2 and it recovers the missing keys offline.
+
+### Converting BIN dumps with ClassicConverter
+
+If you have a Mifare Classic dump in `.bin` format (from tools like libnfc or Proxmark), [Equip's ClassicConverter](https://github.com/equipter/ClassicConverter) converts it to the Flipper `.nfc` file format so you can emulate or analyze the card on your device.
+
+## Amiibo files
+
+The `Amiibo` folder contains NFC emulation files for Nintendo Amiibo figures. These files allow the Flipper Zero to emulate Amiibo tags for use with Nintendo Switch and 3DS games.
+
+<Note>
+  None of the Amiibo files in this repository were created by UberGuidoZ — they are community contributions included for convenience.
+</Note>
+
+## HID and picopass files
+
+HID iClass (picopass) card files are in the `picopass` folder. This functionality has been merged into official Flipper firmware and most third-party firmware builds as well, so you may already have picopass support without needing these files separately.
+
+## Fun files and NFC trolls
+
+The `Fun_Files` directory contains miscellaneous NFC files used for experimentation and entertainment. Basic NFC documentation is included in that folder's README.
+
+For NFC prank files, check out [Toxic_Wolf's NFC Trolls repo](https://github.com/w0lfzk1n/Flipper-Zero-NFC-Trolls), which has a dedicated collection of NFC troll tags.
+
+## Generating H10301 RFID files
+
+[Flipper Maker](https://flippermaker.github.io/) can generate H10301 (Wiegand 26-bit) RFID files and many other file types directly in the browser — no capture hardware needed. This is also covered on the [RFID page](/signals/rfid).
+
+## Key tools at a glance
+
+<CardGroup cols={2}>
+  <Card title="ClassicConverter" icon="arrows-rotate" href="https://github.com/equipter/ClassicConverter">
+    Convert Mifare Classic BIN dumps to Flipper NFC format, by Equip.
+  </Card>
+  <Card title="mfkey32v2" icon="key" href="https://github.com/equipter/mfkey32v2">
+    Crack Mifare Classic sector keys from captured nonce pairs, by Equip.
+  </Card>
+  <Card title="NFC Trolls repo" icon="ghost" href="https://github.com/w0lfzk1n/Flipper-Zero-NFC-Trolls">
+    Community collection of NFC troll and prank tag files by Toxic_Wolf.
+  </Card>
+  <Card title="Flipper Maker" icon="wand-magic-sparkles" href="https://flippermaker.github.io/">
+    Generate H10301 RFID files and many other Flipper file types in the browser.
+  </Card>
+</CardGroup>

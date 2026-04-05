@@ -1,0 +1,282 @@
+---
+title: 'GPIO pinouts'
+description: 'Wiring guides for connecting modules and sensors to the Flipper Zero 18-pin GPIO header.'
+icon: 'microchip'
+---
+
+The Flipper Zero exposes an 18-pin GPIO header that lets you connect external hardware like wireless modules, sensors, and microcontrollers. Pins provide 3.3 V logic by default; 5 V output must be enabled manually in **GPIO settings** on the device.
+
+<Warning>
+  Before connecting any 5 V module, enable 5 V output on the Flipper: **GPIO → Enable 5V**. Skipping this step will leave 5 V pins unpowered and may cause unexpected behavior.
+</Warning>
+
+<Note>
+  Switch between UART pin pairs 13/14 and 15/16 in **GPIO → USB-UART Bridge → LEFT → UART Pins**.
+</Note>
+
+The official GPIO layout was created by [Aleksandr Kutuzov](https://miro.com/app/board/uXjVO_LaYYI=/). Official Flipper documentation is at [docs.flipperzero.one/gpio-and-modules](https://docs.flipperzero.one/gpio-and-modules).
+
+---
+
+## Wireless modules
+
+<AccordionGroup>
+  <Accordion title="NRF24L01+ (8-pin) — Mousejack">
+    Plugin by [mothball187](https://github.com/mothball187/flipperzero-nrf24). Also included in RogueMaster and Unleashed firmware.
+
+    IRQ (pin 8) on the NRF24 is left **disconnected**.
+
+    ```text
+    FZ 2  (A7)  → NRF24 6 (MOSI)
+    FZ 3  (A6)  → NRF24 7 (MISO)
+    FZ 4  (A4)  → NRF24 4 (CSN)
+    FZ 5  (B3)  → NRF24 5 (SCK)
+    FZ 6  (B2)  → NRF24 3 (CE)
+    FZ 8  (GND) → NRF24 1 (GND)
+    FZ 9  (3V3) → NRF24 2 (VCC)
+    ```
+
+    <Tip>
+      If the module behaves erratically, add a decoupling capacitor across VCC and GND. A 3.3–10 µF electrolytic cap (negative to GND) will stabilize slow frequency changes. For best results, add a 0.1 µF cap in parallel to handle high-frequency switching spikes.
+    </Tip>
+  </Accordion>
+
+  <Accordion title="NRF24L01+ (B) — 10-pin">
+    The newer B variant has a 10-pin layout. Thanks to [Amec0e](https://github.com/amec0e) for the mapping.
+
+    ```text
+    NRF24 1  (CE)   → FZ 6  (B2)
+    NRF24 2  (SCK)  → FZ 5  (B3)
+    NRF24 3  (CSN)  → FZ 4  (A4)
+    NRF24 4  (MOSI) → FZ 2  (A7)
+    NRF24 6  (MISO) → FZ 3  (A6)
+    NRF24 7 or 8 (GND) → FZ 8, 11, or 18 (GND)
+    NRF24 9 or 10 (VCC) → FZ 9 (3V3)
+    ```
+  </Accordion>
+
+  <Accordion title="ESP32 / ESP32-WROOM">
+    Thanks to [E_Surge](https://github.com/ESurge) and wyldgoat for guidance. Use at least an ESP32 v2 or above for full functionality.
+
+    When flashing Marauder onto an **ESP32-WROOM**, use the `old_hardware.bin` variant. See the [easy flasher for Windows/Linux/Mac](https://github.com/UberGuidoZ/Flipper/tree/main/Wifi_DevBoard/FZ_Marauder_Flasher/ESP32-WROOM).
+
+    Running an ESP32 single-core? See [V0lk3n's write-up](https://github.com/V0lk3n/Flipper-ESP32-Solo-Marauder) for Marauder on single-core boards.
+
+    ```text
+    ESP32 3  (RX0) → FZ 13 or 15 (TX pins)
+    ESP32 1  (TX0) → FZ 14 or 16 (RX pins)
+    ESP32 GND      → FZ 8, 11, or 18 (GND)
+    ESP32 5V       → FZ 1 (5V)   OR   ESP32 3.3V → FZ 9 (3.3V)
+    ```
+
+    <Warning>
+      If using the 5 V line, enable 5 V output on the Flipper: **GPIO → Enable 5V**.
+    </Warning>
+  </Accordion>
+
+  <Accordion title="ESP8266">
+    Check out [speexvocon's easy web flasher](https://github.com/Speexvocon/FlipperZeroESPexpansion#programming-the-module) for the ESP8266. A [visual pinout PDF](https://github.com/UberGuidoZ/Flipper/blob/main/GPIO/ESP8266_WIFI_Schematic.pdf) is also available. Thanks to PixelHerstel for additional guidance.
+
+    ```text
+    ESP8266 1  (TX0) → FZ 14 or 16 (RX pins)
+    ESP8266 3  (RX0) → FZ 13 or 15 (TX pins)
+    ESP8266 5        → FZ 7
+    ESP8266 6        → FZ 6
+    ESP8266 7        → FZ 5
+    ESP8266 8        → FZ 4
+    ESP8266 VIN      → FZ 1
+    ESP8266 GND      → FZ 8 or 11 (GND)
+    FZ 16            → FZ 18  (Flipper to Flipper connection)
+    ESP8266 5V       → FZ 1 (5V)
+    ```
+
+    <Warning>
+      If using the 5 V line, enable 5 V output on the Flipper: **GPIO → Enable 5V**. Using 3.3 V instead (`ESP8266: 3.3V → FZ 9`) is possible but can have stability issues.
+    </Warning>
+  </Accordion>
+
+  <Accordion title="ESP32-S2 WROVER">
+    Thanks to max_fpv_austria for the pinout mapping.
+
+    ```text
+    ESP32 44 (RX0)  → FZ 13 or 15 (TX pins)
+    ESP32 43 (TX0)  → FZ 14 or 16 (RX pins)
+    ESP32 GND       → FZ 8, 11, or 18 (GND)
+    ESP32 3.3V      → FZ 9 (3.3V)
+    ```
+  </Accordion>
+
+  <Accordion title="ESP32-CAM (camera)">
+    The [FAP file for the camera app](https://github.com/Z4urce/flipperzero-camera/) enables live camera viewing through the Flipper.
+
+    ```text
+    CAM32 1 (RX0)  → FZ 13 or 15 (TX pins)
+    CAM32 2 (TX0)  → FZ 14 or 16 (RX pins)
+    CAM32 3 (GND)  → FZ 8, 11, or 18 (GND)
+    CAM32 4 (3.3V) → FZ 9 (3.3V)   OR   ESP32 5V → FZ 1 (5V)
+    ```
+  </Accordion>
+
+  <Accordion title="LoRa ESP32 (WiFi + Bluetooth + LoRa 433 MHz)">
+    ```text
+    LoRa32 1 (RX0)  → FZ 13 or 15 (TX pins)
+    LoRa32 2 (TX0)  → FZ 14 or 16 (RX pins)
+    LoRa32 3 (GND)  → FZ 8, 11, or 18 (GND)
+    LoRa32 4 (3.3V) → FZ 9 (3.3V)
+    ```
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Single-board computers
+
+<AccordionGroup>
+  <Accordion title="Raspberry Pi Zero (UART)">
+    **Prerequisite:** Mount your Pi Zero SD card and add the following line to the end of `/boot/config.txt`:
+
+    ```text
+    enable_uart=1
+    ```
+
+    Check `/boot/cmdline.txt` to confirm the baud rate is `115200` (the default).
+
+    **Pinout:**
+
+    ```text
+    PiZero 4  (5V)        → FZ 1  (5V)
+    PiZero 6  (GND)       → FZ 11 (GND)
+    PiZero 8  (UART0_TXD) → FZ 14 (RX)
+    PiZero 10 (UART0_RXD) → FZ 13 (TX)
+    ```
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Sensors
+
+<AccordionGroup>
+  <Accordion title="HC-SR04 ultrasonic distance sensor">
+    Plugin by [Sanqui](https://github.com/Sanqui/flipperzero-firmware/blob/hc_sr04/applications/hc_sr04/hc_sr04.c).
+
+    ```text
+    HC-SR04 1 (RX0) → FZ 13 or 15 (TX pins)
+    HC-SR04 2 (TX0) → FZ 14 or 16 (RX pins)
+    HC-SR04 3 (GND) → FZ 8, 11, or 18 (GND)
+    HC-SR04 4 (5V)  → FZ 1 (5V)
+    ```
+
+    <Warning>
+      Enable 5 V output on the Flipper: **GPIO → Enable 5V**.
+    </Warning>
+  </Accordion>
+
+  <Accordion title="HTU21D / SI7021 temperature & humidity sensor">
+    Plugin by [Mywk](https://github.com/Mywk/FlipperTemperatureSensor). Uses I2C.
+
+    ```text
+    FZ 9  (3.3V) → VCC
+    FZ 11 (GND)  → GND
+    FZ 15 (C1)   → SDA
+    FZ 16 (C0)   → SCL
+    ```
+  </Accordion>
+
+  <Accordion title="AM2320 / AM2321 temperature & humidity sensor">
+    Plugin at [xMasterX/AM2320_Flipper_Plugin](https://github.com/xMasterX/AM2320_Flipper_Plugin). Uses I2C.
+
+    ```text
+    FZ 9  (3.3V) → VCC
+    FZ 11 (GND)  → GND
+    FZ 15 (C1)   → SDA
+    FZ 16 (C0)   → SCL
+    ```
+  </Accordion>
+
+  <Accordion title="DHT11 / DHT22 temperature & humidity sensor">
+    Plugin by [quen0n](https://github.com/quen0n/FipperZero-DHT-Monitor).
+
+    ```text
+    VCC  (red wire)    → FZ 1 (5V) or FZ 9 (3V3)
+    GND  (black wire)  → FZ 8 or 18 (GND)
+    DATA (yellow wire) → any of FZ pins 2–7, 10, 12–17
+    ```
+  </Accordion>
+
+  <Accordion title="UHF RFID YRM100">
+    [FAP / app available here](https://github.com/frux-c/uhf_rfid). Credit: [RekordNadoev](https://github.com/RekordNadoev).
+
+    ```text
+    YRM100 1 (VCC) → FZ 1  (5V)
+    YRM100 2 (RXD) → FZ 13 or 15 (TX pins)
+    YRM100 3 (TXD) → FZ 14 or 16 (RX pins)
+    YRM100 4 (EN)  → FZ 9  (3.3V)
+    YRM100 5 (GND) → FZ 8, 11, or 18 (GND)
+    ```
+
+    <Warning>
+      Enable 5 V output on the Flipper: **GPIO → Enable 5V**.
+    </Warning>
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Other peripherals
+
+<AccordionGroup>
+  <Accordion title="Sentry Safe plugin">
+    Plugin by [H4ckd4ddy](https://github.com/H4ckd4ddy/flipperzero-sentry-safe-plugin).
+
+    ```text
+    FZ 8  (GND) → Black wire (Safe)
+    FZ 15 (C1)  → Green wire (Safe)
+    ```
+  </Accordion>
+
+  <Accordion title="i2c Tools">
+    Plugin by [NaejEL](https://github.com/NaejEL/flipperzero-i2ctools).
+
+    ```text
+    FZ C0  → SCL
+    FZ C1  → SDA
+    FZ GND → GND
+    ```
+
+    <Warning>
+      3.3 V logic levels only. Do not connect 5 V I2C devices directly.
+    </Warning>
+  </Accordion>
+
+  <Accordion title="NMEA 0183 GPS">
+    Plugin by [ezod](https://github.com/ezod/flipperzero-gps).
+
+    ```text
+    FZ 9  (3.3V) → VCC
+    FZ 11 (GND)  → GND
+    FZ 13 (TX)   → GPS RX
+    FZ 14 (RX)   → GPS TX
+    ```
+  </Accordion>
+
+  <Accordion title="Servo tester">
+    [Info and app](https://mhasbini.com/blog/servo-tester-flipper-zero.html). Credit: [RekordNadoev](https://github.com/RekordNadoev).
+
+    ```text
+    VCC  (red wire)    → FZ 1 (5V)
+    GND  (black/brown) → FZ 8 or 18 (GND)
+    DATA (yellow wire) → FZ 2
+    ```
+
+    <Warning>
+      Enable 5 V output on the Flipper: **GPIO → Enable 5V**.
+    </Warning>
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Extended Sub-GHz range
+
+To boost Sub-GHz range beyond the built-in antenna, connect an **external CC1101** module. See [quen0n's guide](https://github.com/quen0n/flipperzero-ext-cc1101) for the full hardware and configuration walkthrough.

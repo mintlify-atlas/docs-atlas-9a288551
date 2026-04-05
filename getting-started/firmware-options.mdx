@@ -1,0 +1,85 @@
+---
+title: "Firmware options"
+description: "Compare official and community Flipper Zero firmware builds, including Unleashed, Momentum, and RogueMaster, and understand FAP file compatibility."
+---
+
+Firmware is the operating system running on your Flipper Zero. The choice of firmware affects which radio frequencies you can transmit on, which features are available in menus, how customizable the device is, and which application (FAP) files will load correctly.
+
+## Why firmware choice matters
+
+The official Flipper firmware takes a conservative approach to comply with regulations across different regions — some Sub-GHz frequencies are disabled by default. Community firmware builds often unlock these frequencies, add extra features, and expose more customization options.
+
+Your firmware choice also determines which FAP files you can use. FAPs are compiled against a specific firmware API version, and a mismatch will prevent apps from loading.
+
+## Active firmware options
+
+<CardGroup cols={2}>
+  <Card title="Official (Flipper Devices)" icon="shield-check">
+    The firmware maintained by Flipper Devices. Stable, well-tested, and updated regularly. Conservatively scoped — some Sub-GHz frequencies are locked. Best choice if you want the closest-to-stock experience with reliable OTA updates.
+
+    [GitHub](https://github.com/flipperdevices/flipperzero-firmware) · [Releases](https://github.com/flipperdevices/flipperzero-firmware/releases) · [Discord](https://discord.gg/flipper)
+  </Card>
+  <Card title="Unleashed (DarkFlippers)" icon="lock-open">
+    A fork of the official firmware focused on unlocking Sub-GHz frequency restrictions and other limitations. One of the most widely used community builds. FAP files built for Unleashed are interchangeable with RogueMaster.
+
+    [GitHub](https://github.com/DarkFlippers/unleashed-firmware) · [Releases](https://github.com/DarkFlippers/unleashed-firmware/releases) · [Discord](https://discord.unleashedflip.com/)
+  </Card>
+  <Card title="Momentum" icon="gauge-high">
+    A fork of the official firmware that incorporates features from Unleashed and adds the most extensive customization options of any active build. Aimed at users who want maximum control over their device's appearance and behavior.
+
+    [GitHub](https://github.com/Next-Flip/Momentum-Firmware) · [Releases](https://github.com/Next-Flip/Momentum-Firmware/releases) · [Discord](https://discord.gg/momentum)
+  </Card>
+  <Card title="RogueMaster" icon="wand-magic-sparkles">
+    A fork of the official firmware with Unleashed features and a large number of additional customizations and bundled plugins. FAP files built for RogueMaster are interchangeable with Unleashed.
+
+    [GitHub](https://github.com/RogueMaster/flipperzero-firmware-wPlugins) · [Releases](https://github.com/RogueMaster/flipperzero-firmware-wPlugins/releases) · [Discord](https://discord.gg/s5hM5XgSKb)
+  </Card>
+</CardGroup>
+
+## FAP file compatibility
+
+FAP files (Flipper Application Packages) are compiled against a specific firmware API. Loading a FAP built for the wrong firmware will fail.
+
+| FAP type | Works with |
+|----------|-----------|
+| Official FAPs | Official firmware only |
+| Unleashed FAPs | Unleashed and RogueMaster |
+| RogueMaster FAPs | RogueMaster and Unleashed |
+| Momentum FAPs | Momentum only |
+
+<Warning>
+  FAP files are **not** interchangeable between Official firmware and community builds (Unleashed, Momentum, RogueMaster). If you switch firmware, you need to also update your FAP files to match the new firmware's API version. Using the wrong FAP will show a "API Mismatch" error on the device.
+</Warning>
+
+<Note>
+  An unofficial FAP store is available at [FlipC.org](https://flipc.org/) — a quick way to browse and install FAP files for your firmware of choice.
+</Note>
+
+## Abandoned and outdated firmware
+
+The following firmware projects are no longer actively maintained. They are listed here for historical reference only. Do not use them on a current Flipper Zero — they will be missing security fixes and are not compatible with current FAP files.
+
+| Firmware | Status | Notes |
+|----------|--------|-------|
+| MuddleBox | Outdated / abandoned | First community firmware to unlock Sub-GHz; no longer maintained |
+| SquachWare | Outdated / abandoned | Fork of official firmware |
+| v1nc | Outdated / abandoned | Fork of official firmware |
+| Wetox | Outdated / abandoned | Fork of official firmware |
+| Xtreme (ClaraCrazy) | Archived / abandoned | Discord server closed in Summer 2024 |
+| Xvirus (Dexv) | Outdated / inactive | Fork of official firmware |
+
+## Choosing a firmware
+
+<Tabs>
+  <Tab title="I want stability">
+    Use **Official** firmware. It is the most tested, receives regular updates from Flipper Devices, and is the safest choice if you are not looking to unlock additional frequencies or heavily customize the device.
+  </Tab>
+  <Tab title="I want unlocked frequencies">
+    Use **Unleashed** or **RogueMaster**. Both unlock Sub-GHz frequency restrictions and are actively maintained. FAP files built for either of these two builds are interchangeable.
+  </Tab>
+  <Tab title="I want maximum customization">
+    Use **Momentum**. It combines Unleashed's frequency unlocks with the most extensive customization options available — themes, animations, menu layout, and more.
+  </Tab>
+</Tabs>
+
+For a detailed feature-by-feature comparison across all firmware builds, see the [Firmware differences guide](https://github.com/djsime1/awesome-flipperzero/blob/main/Firmwares.md) maintained by the Awesome Flipper project.

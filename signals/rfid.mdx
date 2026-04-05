@@ -1,0 +1,72 @@
+---
+title: "RFID files"
+description: "H10301 bruteforce files for Wiegand 26-bit HID access control cards, and an overview of RFID on Flipper Zero."
+---
+
+The RFID section covers low-frequency 125 kHz RFID — specifically H10301 bruteforce files for HID-format access control cards.
+
+## RFID vs NFC
+
+Flipper Zero handles two distinct contactless technologies:
+
+| | RFID | NFC |
+|---|---|---|
+| Frequency | 125 kHz (low frequency) | 13.56 MHz (high frequency) |
+| Typical use | Access control cards, key fobs | Payment cards, Amiibo, transit cards |
+| Flipper menu | **125 kHz** | **NFC** |
+| File extension | `.rfid` | `.nfc` |
+
+The files in this section are **125 kHz RFID** only. For NFC (13.56 MHz) files, see the [NFC page](/signals/nfc).
+
+## H10301 format
+
+**H10301** is one of the most widely deployed formats in physical access control. It is a Wiegand 26-bit protocol used by HID Global cards and compatible readers.
+
+A Wiegand 26-bit credential contains:
+
+- 1 even parity bit
+- 8-bit facility code (0–255)
+- 16-bit card number (0–65535)
+- 1 odd parity bit
+
+Because the card number space is finite and relatively small, it is possible to enumerate every valid credential for a given facility code — or across all facility codes — as a bruteforce file.
+
+## H10301 bruteforce files
+
+The `H10301 Bruteforce` folder contains `H10301_BF.zip`. When extracted, it produces `H10301_BF.txt` — a file that lists every possible H10301 UID for use with the Flipper Zero RFID Fuzzer.
+
+<Note>
+  Credit for this file goes to [gh0st91](https://github.com/gh0st91/fz). The Python script used to generate it is available at that repository.
+</Note>
+
+The bruteforce list is large and exhaustive. **Stepping through every possible H10301 combination takes approximately 4 weeks** using the RFID Fuzzer at normal timing. This is more useful for testing and research than for practical access attempts.
+
+### How to use the bruteforce file
+
+<Steps>
+  <Step title="Download and extract">
+    Download `H10301_BF.zip` from the repository and extract it on your computer. You will get a file called `H10301_BF.txt`.
+  </Step>
+  <Step title="Copy to SD card">
+    Connect your Flipper Zero via USB-C and open qFlipper. Navigate to the SD card root and copy `H10301_BF.txt` into the `rfidfuzzer/` folder.
+  </Step>
+  <Step title="Open RFID Fuzzer on Flipper">
+    On the Flipper, go to **Applications** → **Tools** → **RFID Fuzzer** (or find it under your installed apps if you have a third-party firmware).
+  </Step>
+  <Step title="Load the UID list">
+    In RFID Fuzzer, select **Load file** and choose `H10301_BF.txt`. The fuzzer will begin transmitting H10301 credentials sequentially.
+  </Step>
+</Steps>
+
+## Generating custom H10301 files
+
+[Flipper Maker](https://flippermaker.github.io/) can generate individual H10301 `.rfid` files for specific facility code and card number combinations. This is useful when you want to create a specific credential rather than stepping through all of them.
+
+<CardGroup cols={2}>
+  <Card title="Flipper Maker" icon="wand-magic-sparkles" href="https://flippermaker.github.io/">
+    Generate H10301 RFID files and other Flipper file formats in the browser.
+  </Card>
+  <Card title="NFC files" icon="credit-card" href="/signals/nfc">
+    13.56 MHz high-frequency NFC files, Mifare Classic tools, and Amiibo emulation.
+  </Card>
+</CardGroup>

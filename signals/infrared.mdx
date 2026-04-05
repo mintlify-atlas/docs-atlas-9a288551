@@ -1,0 +1,149 @@
+---
+title: "Infrared remotes"
+description: "Universal IR remote files for TVs, ACs, audio systems, projectors, and fans — plus protocol details and installation instructions."
+---
+
+The Infrared section provides universal `.ir` remote files for common device categories. These files contain signals from many manufacturers consolidated into a single file — press one button on the Flipper and it cycles through all known codes until the device responds.
+
+<Note>
+  The full IR code database lives at [Flipper-IRDB](https://github.com/UberGuidoZ/Flipper-IRDB). The files here are the universal remotes maintained directly in the UberGuidoZ/Flipper repository.
+</Note>
+
+## Universal remote files
+
+Five universal remote files are included:
+
+| File | Device type | Compiled by | Maintained by |
+|------|-------------|-------------|---------------|
+| `tv.ir` | Televisions | [Hyper_Mash](https://discord.com/channels/740930220399525928/954422774141710366/994121751023853668) | [amec0e](https://github.com/amec0e) |
+| `ac.ir` | Air conditioners | [JEREMYNO](https://github.com/jaroslavmraz) | [amec0e](https://github.com/amec0e) |
+| `audio.ir` | Soundbars and speakers | [amec0e](https://github.com/amec0e) | [amec0e](https://github.com/amec0e) |
+| `projectors.ir` | Projectors | [xMasterx](https://github.com/Eng1n33r/flipperzero-firmware/commit/029f82dc822e6d3515b39b839a2f70500dc9bb86) | [amec0e](https://github.com/amec0e) |
+| `fans.ir` | Fans | Edhel90 | [amec0e](https://github.com/amec0e) |
+
+All files include every button — not just power and volume — and have been tested with Unleashed and RogueMaster firmware. Huge thank you to [amec0e](https://github.com/amec0e) for ongoing maintenance across all files.
+
+<Note>
+  Both [Unleashed](https://github.com/Eng1n33r/flipperzero-firmware) and [RogueMaster](https://github.com/RogueMaster/flipperzero-firmware-wPlugins) firmware include these universal remotes. Official firmware will include them at a future point. **You may encounter manifest file issues if you use a firmware that has not been tested with these files.**
+</Note>
+
+## Installing a universal remote file
+
+<Steps>
+  <Step title="Download the file from GitHub">
+    Navigate to the file you want (e.g. `tv.ir`) in the repository. Click the **Raw** button, then right-click and choose **Save link as** to download the raw file to your computer.
+  </Step>
+  <Step title="Connect your Flipper">
+    Open [qFlipper](https://flipperzero.one/update) on your computer and connect your Flipper Zero via USB-C.
+  </Step>
+  <Step title="Transfer the file">
+    In qFlipper, navigate to **SD Card** → **infrared/**. Drag and drop the downloaded `.ir` file into that folder, replacing the existing file or adding a new one alongside it.
+  </Step>
+  <Step title="Use the remote on your Flipper">
+    On the Flipper, go to **Infrared** → **Saved remotes** and select the file you just transferred. Press any button to send that signal repeatedly until the device responds.
+  </Step>
+</Steps>
+
+<Warning>
+  Long pauses during playback are normal. When cycling through all buttons, the Flipper skips signals for buttons you are not pressing — this can cause 10–15 seconds of no apparent activity. Wait it out; the file is still working.
+</Warning>
+
+## Generating custom IR files
+
+[Flipper Maker](https://flippermaker.github.io/) lets you generate custom `.ir` files in the browser for specific devices or manually defined codes.
+
+## IR protocols
+
+The universal remote files use signals encoded in the following protocols. Each protocol has a different preamble, timing structure, and bit width.
+
+<AccordionGroup>
+  <Accordion title="NEC">
+    One of the most common IR protocols. Uses pulse distance modulation with a 9000 µs mark preamble and 4500 µs space, followed by 32 data bits and a stop bit. Repeat signals use a 9000 µs mark followed by a 2250 µs space.
+
+    ```text
+    Preamble mark: 9000 µs
+    Preamble space: 4500 µs
+    Data: 32 bits + stop bit
+    Pause: ~110000 µs
+    Repeat mark: 9000 µs
+    Repeat space: 2250 µs
+    ```
+
+    Reference: [radioparty.ru](https://radioparty.ru/manuals/encyclopedia/213-ircontrol?start=1)
+  </Accordion>
+  <Accordion title="SAMSUNG32">
+    Similar structure to NEC but with a 4500 µs preamble mark and 4500 µs space. Used across Samsung TVs and appliances.
+
+    ```text
+    Preamble mark: 4500 µs
+    Preamble space: 4500 µs
+    Data: 32 bits + stop bit
+    Pause: 40000–100000 µs
+    Repeat mark: 4500 µs
+    Repeat space: 4500 µs
+    ```
+
+    Reference: [mikrocontroller.net SAMSUNG](https://www.mikrocontroller.net/articles/IRMP_-_english#SAMSUNG)
+  </Accordion>
+  <Accordion title="Sony SIRC">
+    Pulse width modulation protocol. Three variants exist: SIRC (12 bit), SIRC15 (15 bit), SIRC20 (20 bit). Sony remotes always send at least 3 consecutive messages.
+
+    ```text
+    Preamble mark: 2400 µs
+    Preamble space: 600 µs
+    Bit timing: 600 µs (0) or 1200 µs (1)
+    Pause: ~45000 µs
+    ```
+
+    Reference: [sbprojects.net](https://www.sbprojects.net/knowledge/ir/sirc.php)
+  </Accordion>
+  <Accordion title="RC5">
+    Manchester (biphase) encoded protocol. Uses 888 µs per half-bit. Includes a toggle bit that flips value on each button press, so the receiver can detect repeated presses.
+
+    ```text
+    Bit duration: 888 µs (or 1776 µs for toggle bit)
+    Encoding: Manchester/biphase
+    Structure: start bit, RC5X bit, toggle, 5-bit address, 6/7-bit command
+    ```
+
+    Reference: [mikrocontroller.net RC5](https://www.mikrocontroller.net/articles/IRMP_-_english#RC5_.2B_RC5X)
+  </Accordion>
+  <Accordion title="RC6">
+    Extended Manchester encoding. Uses a 2666 µs preamble mark with 889 µs space, followed by 444/888 µs bits. Includes a mode field and a toggle bit that is twice the normal bit width.
+
+    ```text
+    Preamble mark: 2666 µs
+    Preamble space: 889 µs
+    Bit duration: 444 µs (or 888 µs for toggle bit)
+    Trailing silence: 2666 µs
+    Structure: start, 3-bit mode, toggle, 8-bit address, 8-bit command
+    ```
+
+    Reference: [mikrocontroller.net RC6](https://www.mikrocontroller.net/articles/IRMP_-_english#RC6_.2B_RC6A)
+  </Accordion>
+  <Accordion title="Kaseikyo">
+    Japanese protocol (Panasonic, JVC, Denon). Uses pulse distance/width modulation with a 3360 µs mark preamble and 1665 µs space, followed by 48 data bits.
+
+    ```text
+    Preamble mark: 3360 µs
+    Preamble space: 1665 µs
+    Data: 48 bits
+    Pause: ~130000 µs
+    Repeat mark: 3456 µs
+    Repeat space: 1728 µs
+    ```
+
+    Reference: [Arduino-IRremote Kaseikyo](https://github.com/Arduino-IRremote/Arduino-IRremote/blob/master/src/ir_Kaseikyo.hpp)
+  </Accordion>
+</AccordionGroup>
+
+## Further resources
+
+<CardGroup cols={2}>
+  <Card title="Flipper-IRDB" icon="database" href="https://github.com/UberGuidoZ/Flipper-IRDB">
+    The full community IR database with thousands of device-specific remote files organized by manufacturer.
+  </Card>
+  <Card title="Flipper Maker" icon="wand-magic-sparkles" href="https://flippermaker.github.io/">
+    Generate custom `.ir` files in the browser for any IR device.
+  </Card>
+</CardGroup>

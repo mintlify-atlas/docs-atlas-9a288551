@@ -1,0 +1,83 @@
+{
+  "projectType": "general",
+  "projectName": "Flipper Zero Resource Hub",
+  "projectDescription": "A community playground and resource collection for the Flipper Zero multi-tool device, covering signal files, BadUSB scripts, GPIO pinouts, firmware options, applications, and more.",
+  "theme": "aspen",
+  "primaryColor": "#FF6B00",
+  "lightColor": null,
+  "darkColor": null,
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "getting-started/setup",
+              "getting-started/firmware-options"
+            ]
+          },
+          {
+            "group": "Wireless Signals",
+            "pages": [
+              "signals/sub-ghz",
+              "signals/infrared",
+              "signals/nfc",
+              "signals/rfid"
+            ]
+          },
+          {
+            "group": "BadUSB",
+            "pages": [
+              "badusb/overview",
+              "badusb/scripts"
+            ]
+          },
+          {
+            "group": "Hardware & GPIO",
+            "pages": [
+              "hardware/gpio-pinouts",
+              "hardware/wifi-devboard",
+              "hardware/custom-pcbs"
+            ]
+          },
+          {
+            "group": "Applications & Customization",
+            "pages": [
+              "apps/installing-faps",
+              "apps/building-faps",
+              "customization/graphics-animations",
+              "customization/music-player",
+              "customization/dolphin-level"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Sub-GHz signal files for garages, doorbells, remote outlets, and more",
+    "Universal Infrared remote files (TV, AC, audio, projectors, fans)",
+    "NFC resources including Amiibo files and expanded Mifare Classic key dictionary",
+    "BadUSB DuckyScript payloads for Windows, macOS, and Linux",
+    "GPIO pinout guides for ESP32, ESP8266, NRF24, and other hardware modules",
+    "WiFi Dev Board setup guide with Marauder and ESP32 flasher instructions",
+    "Firmware options comparison (Official, Unleashed, Momentum, RogueMaster)",
+    "Flipper Application Packages (FAPs) for custom plugins",
+    "Custom graphics, animations, and music player files",
+    "Dolphin level and butthurt state management files"
+  ],
+  "publicApiSurface": [
+    "Sub-GHz .sub signal files (RAW format: positive=send µs, negative=pause µs)",
+    "Infrared .ir files (TV, AC, audio, projectors, fans universal remotes)",
+    "NFC Mifare Classic key dictionary (mf_classic_dict)",
+    "BadUSB DuckyScript .txt payload scripts",
+    "GPIO pinout mappings for ESP32, ESP8266, NRF24L01+, RPi Zero, sensors",
+    "Flipper Application Package (.fap) files for custom firmware",
+    "Dolphin state files (.dolphin.state.*) for XP level management",
+    "Marauder commands: scanap, sniffbeacon, sniffdeauth, sniffpmkid, stopscan, clearap, ssid, update, attack",
+    "Sub-GHz frequency bands: 300-348 MHz, 387-464 MHz, 779-928 MHz (CC1101)"
+  ]
+}

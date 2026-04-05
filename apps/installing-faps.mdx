@@ -1,0 +1,68 @@
+---
+title: "Installing applications (FAPs)"
+description: "How to install Flipper Application Packages from your SD card, where to find them, and which firmware versions are compatible."
+---
+
+Flipper Application Packages (FAPs) are compiled application binaries that run directly from your SD card. Rather than being baked into firmware, they load on demand from the **Applications** menu — making it easy to add or update apps without reflashing.
+
+<Warning>
+  FAP files are **not interchangeable** between Official firmware and community firmwares (Unleashed, RogueMaster). This is because each firmware exposes a different internal API. A FAP compiled for Unleashed will crash on Official firmware and vice versa. FAPs **are** interchangeable between Unleashed (UL) and RogueMaster (RM).
+</Warning>
+
+## How to install
+
+<Steps>
+  <Step title="Download the correct FAP for your firmware">
+    Select the FAP file built for your firmware variant. Files in the **Custom (UL, RM)** folder work for both Unleashed and RogueMaster. Files in the **Official** folder are compiled for official Flipper firmware only.
+  </Step>
+  <Step title="Create an apps/ folder on your SD card">
+    Connect your Flipper to your computer using qFlipper. In the file browser, navigate to the SD card root and create a folder named `apps` if one does not already exist.
+  </Step>
+  <Step title="Organize into subfolders (optional)">
+    Inside `apps/`, you can create subfolders to keep things organized — for example, `apps/Games/`, `apps/Tools/`, `apps/GPIO/`. The Flipper will display these as nested folders in its Applications menu.
+  </Step>
+  <Step title="Copy your .fap files">
+    Drag your downloaded `.fap` files into the appropriate folder. Safely eject when done.
+  </Step>
+  <Step title="Open the Applications menu on Flipper">
+    On your Flipper Zero, navigate to the **Applications** menu item from the main menu. Press the center button to open it. You will see your folder structure reflected here.
+  </Step>
+  <Step title="Launch an app">
+    Navigate to the `.fap` you want to run and press the center button to load it. Press **BACK** to exit the app and return to the Applications menu.
+  </Step>
+</Steps>
+
+<Note>
+  Keep your firmware on the latest release (dev branch in most cases) before loading FAPs. API changes between firmware versions can cause older FAPs to stop working even within the same firmware family.
+</Note>
+
+## Where to find FAPs
+
+<CardGroup cols={2}>
+  <Card title="FlipC.org — Unofficial FAP Store" icon="store" href="https://flipc.org/">
+    The unofficial FAP store by Aleksey Korolev. Browse, search, and install FAPs directly — the fastest way to discover apps for Unleashed and RogueMaster.
+  </Card>
+  <Card title="xMasterX — Unleashed Apps" icon="square-github" href="https://github.com/xMasterX">
+    xMasterX of the Unleashed firmware team maintains a growing collection of working applications compiled for Unleashed (and compatible with RogueMaster).
+  </Card>
+  <Card title="Official FAP documentation" icon="file-lines" href="https://github.com/flipperdevices/flipperzero-firmware/blob/dev/documentation/AppsOnSDCard.md">
+    The official Flipper Zero documentation on loading apps from the SD card, including the original FAP pack released by the Flipper dev team.
+  </Card>
+  <Card title="UberGuidoZ Applications" icon="folder-open" href="https://github.com/UberGuidoZ/Flipper/tree/main/Applications">
+    Custom apps from UberGuidoZ including a GPIO logic analyzer and a smart meter monitor, with links to other community authors.
+  </Card>
+</CardGroup>
+
+## Firmware compatibility at a glance
+
+<Tabs>
+  <Tab title="Unleashed (UL)">
+    FAPs in the **Custom (UL, RM)** folder are compiled for Unleashed. They also work on RogueMaster without any changes.
+  </Tab>
+  <Tab title="RogueMaster (RM)">
+    RogueMaster uses the same FAP API as Unleashed. Any FAP labeled for UL or RM loads on RogueMaster without modification.
+  </Tab>
+  <Tab title="Official firmware">
+    Official firmware uses a different internal API. Only FAPs from the **Official** folder or the official FAP pack will work. Do not mix UL/RM FAPs with official firmware.
+  </Tab>
+</Tabs>

@@ -1,0 +1,54 @@
+---
+title: 'Custom PCBs & expansion boards'
+description: 'Community-designed PCBs, expansion boards, and tips for connecting modules to the Flipper Zero GPIO header.'
+icon: 'microchip'
+---
+
+The Flipper Zero community has produced a range of custom PCBs and expansion boards that make it easier to connect modules to the GPIO header. These designs are open-source and can be ordered from a PCB fabrication service or assembled on a prototype board.
+
+## Community PCB designs
+
+<CardGroup cols={2}>
+  <Card title="DrB0rk — Flipper Zero Boards" icon="microchip" href="https://github.com/DrB0rk/Flipper-Zero-Boards">
+    A collection of Flipper Zero expansion board designs.
+  </Card>
+  <Card title="AWOK — Flipper Zero Boards" icon="microchip" href="https://github.com/AWOK559/Flipper_Zero_Boards">
+    Additional GPIO expansion board designs from AWOK.
+  </Card>
+  <Card title="Speexvocon — ESP expansion & header extender" icon="plug" href="https://github.com/Speexvocon/">
+    Two boards: an [ESP expansion board](https://github.com/Speexvocon/FlipperZeroESPexpansion) for clean ESP module mounting and a [header extender](https://github.com/Speexvocon/FlipperZeroHeaderExtender) for easier access to GPIO pins.
+  </Card>
+  <Card title="ushastoe / krolchonok — flipper-board" icon="layer-group" href="https://github.com/krolchonok/flipper-board">
+    General-purpose GPIO expansion board by ushastoe and krolchonok.
+  </Card>
+  <Card title="TheOtherLonestar — RS-232 UART adapter" icon="ethernet" href="https://github.com/TheOtherLonestar/RS-232-UART-Flipper">
+    Adapts the Flipper's UART pins to RS-232 voltage levels for connecting to serial devices.
+  </Card>
+  <Card title="Oleksii Kutuzov — flasher board" icon="bolt" href="https://github.com/oleksiikutuzov/flipperzero-flasher-board">
+    A dedicated board for programming/flashing external microcontrollers via the Flipper GPIO header.
+  </Card>
+</CardGroup>
+
+---
+
+## Extended Sub-GHz range
+
+Connect an **external CC1101** module to significantly increase Sub-GHz transmission and reception range beyond the built-in antenna. See [quen0n's guide](https://github.com/quen0n/flipperzero-ext-cc1101) for hardware requirements, wiring, and firmware configuration.
+
+---
+
+## Connecting modules without a PCB
+
+A custom PCB is not required to use GPIO modules. You can prototype connections with standard electronics components:
+
+- **Breadboard:** Seat the Flipper GPIO pins or a header extender into a half-sized or full-sized breadboard. Route jumper wires from Flipper pins to module pins using the pinout tables in [GPIO Pinouts](/hardware/gpio-pinouts).
+- **Dupont jumper wires:** Female-to-female wires connect directly between the Flipper's pin header and most breakout modules.
+- **Decoupling capacitors:** For RF modules like the NRF24L01+, add a 3.3–10 µF capacitor across the VCC and GND pins to reduce voltage noise and improve stability.
+
+<Warning>
+  Always double-check polarity before powering a module. Reversing VCC and GND can permanently damage the Flipper or the connected module.
+</Warning>
+
+<Tip>
+  If a module behaves erratically at 3.3 V, try enabling 5 V output (**GPIO → Enable 5V**) and powering it from pin 1 instead — but only if the module supports 5 V input.
+</Tip>

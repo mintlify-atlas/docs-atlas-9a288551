@@ -1,0 +1,309 @@
+---
+title: "Script library"
+description: "Categorized reference for the BadUSB scripts collected, converted, and created in the UberGuidoZ Flipper repository."
+---
+
+This page catalogs the scripts in the `BadUSB/` directory. Each file is a plain-text DuckyScript payload ready to drop into the `badusb/` folder on your Flipper's SD card. Scripts are written for specific operating systems — check the `REM Target:` comment at the top of each file before running.
+
+<Warning>
+  Use these scripts only on systems you own or have explicit written authorization to test. Unauthorized execution of BadUSB payloads is illegal in most jurisdictions.
+</Warning>
+
+---
+
+## DuckyScript example
+
+Before diving into the library, here is a representative script showing the structure every payload follows — comments, delays, key combinations, and string injection:
+
+```text RickRoll_CMD_Win.txt
+REM Title: Rick Roll Windows CMD
+REM Author: Nando Kools | NanKooDev
+REM Description: RickRoll in Windows Command Prompt
+REM Target: Windows
+GUI r
+DELAY 1000
+STRING curl http://ascii.live/rick
+ENTER
+DELAY 750
+ALT ENTER
+```
+
+`GUI r` opens the Windows Run dialog. `STRING` types the curl command. `ALT ENTER` maximizes the Command Prompt window to fill the screen.
+
+---
+
+## Script categories
+
+<AccordionGroup>
+
+  <Accordion title="Entertainment and trolls">
+    Scripts designed for harmless pranks or demonstrations. All require physical access to an unlocked machine.
+
+    | File | Target | Description |
+    |---|---|---|
+    | `RickRoll_CMD_Win.txt` | Windows | Plays the Rick Astley ASCII animation in a full-screen Command Prompt via `curl http://ascii.live/rick`. |
+    | `RickRoll_YT_Win.txt` | Windows | Opens the YouTube Rickroll in the default browser. |
+    | `OSX_Rickroll.txt` | macOS 11.0+ | Opens YouTube at full volume via Terminal, then closes Terminal. |
+    | `rickroll-android.txt` | Android | Opens the YouTube Rickroll in the Android browser and triggers fullscreen. |
+    | `RickRoll (Basic).txt` | Windows | Minimal Rickroll variant. |
+    | `RickRoll Max Vol (Basic).txt` | Windows | Rickroll with system volume maximized first. |
+    | `RickRoll_Term_OSX.txt` | macOS | Terminal-based ASCII rickroll for macOS. |
+    | `RickRoll_YT_OSX.txt` | macOS | Browser-based rickroll for macOS. |
+    | `SpamRickrollPayload.txt` | Windows | Repeatedly fires the rickroll. |
+    | `Windows_MacOS_ascii-live_CMD_Rickroll/` | Windows / macOS | Cross-platform ASCII rickroll collection. |
+    | `RR_ASCII_Win.txt` | Windows | ASCII animation rickroll for Windows. |
+    | `Party_Parrot_Win.txt` | Windows | Displays the Party Parrot animation in a Command Prompt window. |
+    | `Party_Parrot_OSX.txt` | macOS | Party Parrot for macOS Terminal. |
+    | `Mario-head.txt` | Windows | Plays a Mario head ASCII animation. |
+    | `Earrape_Troll.txt` | Windows | Maximizes system volume as a troll. |
+    | `Honk.txt` | Windows | Plays a honk sound effect. |
+    | `Hey_Everybody.txt` | Windows | Audio troll payload. |
+    | `Hacker_Typer.txt` | Windows | Opens Hacker Typer in a browser — looks dramatic, does nothing. |
+    | `The_Matrix_Wake_Up.txt` | Windows | Matrix-themed ASCII animation. |
+    | `Power-Imperial.txt` | Windows | Imperial March power-related troll. |
+
+    The macOS rickroll is a good example of chaining app launch, URL open, and volume control in one script:
+
+    ```text OSX_Rickroll.txt
+    REM Title: macOS rickroll
+    REM Author: Nils Streedain / spydamarkman
+    REM Description: Opens a rickroll in YouTube in full screen at maximum volume.
+    REM Target: macOS 11.0+
+    DELAY 1000
+    GUI SPACE
+    DELAY 500
+    STRING terminal
+    DELAY 100
+    ENTER
+    DELAY 1000
+    STRING open 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
+    ENTER
+    DELAY 1000
+    GUI TAB
+    DELAY 100
+    STRING osascript -e 'set volume 7' && killall Terminal
+    ENTER
+    DELAY 1500
+    STRING f
+    ```
+
+    `GUI SPACE` opens Spotlight on macOS. After launching Terminal, `killall Terminal` closes the window so the YouTube tab is front and center.
+  </Accordion>
+
+  <Accordion title="Information gathering">
+    Scripts that enumerate system state — useful for authorized audits and penetration testing reconnaissance.
+
+    | File | Target | Description |
+    |---|---|---|
+    | `Show_WiFi_Passwords.txt` | Windows | Extracts saved Wi-Fi SSIDs and plaintext keys using `netsh wlan show profiles`. |
+    | `Wifi_for_Flipper.txt` | Windows | Variant of Wi-Fi password extraction. |
+    | `Wifi_and_Show_Passwords_for_Flipper.txt` | Windows | Combined Wi-Fi and saved password extraction. |
+    | `Show_Saved_Passwords.txt` | Windows | Downloads and runs NirSoft WebBrowserPassView to export browser-saved credentials to an HTML file. |
+    | `Show_Saved_Passwords_UPDATED.txt` | Windows | Updated version of the saved password exfiltration script. |
+    | `Get-Connected-USBs.txt` | Windows 10 | Uses `Get-PnpDevice` to list all currently connected USB devices and writes the output to `USB-Connected.txt`. |
+    | `PingMe.txt` | Windows 7/8/10/11 | Fires a GET request to a webhook URL to verify internet connectivity from the target. |
+
+    The Wi-Fi password script is one of the simplest and most instructive payloads in the collection:
+
+    ```text Show_WiFi_Passwords.txt
+    REM Displays saved wireless passwords on screen
+    REM Author: UberGuidoZ
+    DELAY 2000
+    GUI r
+    DELAY 1000
+    STRING cmd
+    DELAY 500
+    ENTER
+    DELAY 2000
+    STRING cls
+    DELAY 250
+    ENTER
+    DELAY 250
+    STRING for /f "skip=9 tokens=1,2 delims=:" %i in ('netsh wlan show profiles') do @echo %j | netsh wlan show profiles %j key=clear | findstr /C:"SSID name" /C:"Key Content"
+    DELAY 250
+    ENTER
+    ```
+
+    The USB enumeration script is similarly concise:
+
+    ```text Get-Connected-USBs.txt
+    REM Title: Get-Connected-USBs
+    REM Author: atomicsec
+    REM Target OS: Windows 10
+    DELAY 2000
+    GUI r
+    DELAY 2000
+    STRING powershell
+    DELAY 250
+    ENTER
+    DELAY 2000
+    STRING Get-PnpDevice -PresentOnly | Where-Object { $_.InstanceId -match '^USB' } | Out-File -FilePath .\USB-Connected.txt
+    ENTER
+    ```
+  </Accordion>
+
+  <Accordion title="System and utilities">
+    Scripts that interact with system settings, automate installs, or demonstrate Flipper Zero's own capabilities.
+
+    | File | Target | Description |
+    |---|---|---|
+    | `qFlipper-windows.txt` | Windows | Downloads and silently installs qFlipper 1.2.2 via PowerShell. Useful for quickly setting up a new Windows machine for Flipper updates. |
+    | `1_minute_to_sleep.txt` | Windows 10+ | Schedules a shutdown in 60 seconds using `shutdown /s /t 60`. Demonstrates scheduled execution. |
+    | `PingMe.txt` | Windows 7/8/10/11 | Sends a GET request to a configurable webhook — confirms the target has internet access. |
+    | `GoodUSB.txt` | Windows | Types a convincing antivirus scan prompt in Notepad, then actually downloads ClamAV and runs a memory scan. A demonstration that BadUSB can be used constructively. |
+    | `Char_Test.txt` | Windows | Types every common special character into Notepad to verify keyboard layout compatibility before deploying real payloads. |
+    | `Char_Test_ALTSTRING.txt` | Windows | Variant using `ALTSTRING` for characters that `STRING` may not type correctly on non-US layouts. |
+    | `CYE_Was_Here.txt` | Windows | Leaves a text marker — useful as a proof-of-access payload in authorized tests. |
+    | `UBGZ_Was_Here.txt` | Windows | UberGuidoZ proof-of-access marker variant. |
+    | `Kuronons_FZ_Win.txt` | Windows | Windows utility payload by Kuronons. |
+    | `Awesome_Flipper_OSX.txt` | macOS | macOS utility payload. |
+    | `CounterCrowdStrike/` | Windows | Response tooling related to CrowdStrike incident scenarios. |
+  </Accordion>
+
+  <Accordion title="Security research">
+    Scripts demonstrating credential access, network capture, and post-exploitation techniques. Intended for use in authorized penetration tests and red team exercises only.
+
+    | File | Target | Description |
+    |---|---|---|
+    | `Cookie-Stealer.txt` | Windows | Extracts browser cookies from the target machine. |
+    | `Credential_Harvester_MarkCyber.txt` | Windows | Harvests stored credentials. By MarkCyber. |
+    | `Wifi-Stealer_ORG.txt` | Windows | Original Wi-Fi credential stealer — exfiltrates saved network keys. |
+    | `Wifi-Stealer_Discord.txt` | Windows | Wi-Fi stealer that exfiltrates data via a Discord webhook. |
+    | `Wifi-Stealer_Discord-Improved.txt` | Windows | Improved Discord-exfiltration variant. |
+    | `Wifi-Stealer_Hook.txt` | Windows | Wi-Fi stealer using a generic webhook endpoint. |
+    | `Wifi-Stealer_Zoom.txt` | Windows | Wi-Fi stealer exfiltrating via a Zoom webhook. |
+    | `Grabber-Discord_Webhook.txt` | Windows | General data grabber exfiltrating over Discord webhooks. |
+    | `PoC_Discord_Webhook.txt` | Windows | Proof-of-concept Discord webhook exfiltration. |
+    | `Zero-Lazagne/` | Windows | Integrates LaZagne (open-source credential recovery tool) for broad password collection. |
+    | `Bombs/` | Windows | Collection of denial-of-service demonstration scripts (fork bomb variants). |
+    | `Pwn-Drive/` | Windows | Scripts targeting connected drives. |
+    | `Screen-Shock/` | Windows | Screen-disruption payloads. |
+    | `History-Pig/` | Windows | Extracts browser history. |
+    | `Bookmark-Hog/` | Windows | Extracts browser bookmarks. |
+    | `Copy-And-Waste/` | Windows | Clipboard manipulation payloads. |
+    | `Water-UnMark/` | Windows | Removes watermarks from documents. |
+    | `Discord_FAQ/` | Windows | Discord-related automation scripts. |
+  </Accordion>
+
+  <Accordion title="Kiosk and access research">
+    Scripts for testing kiosk lockdown strength. Useful for evaluating the security of public-access terminals and POS systems in authorized assessments.
+
+    | File | Target | Description |
+    |---|---|---|
+    | `Kiosk-Evasion-Bruteforce.txt` | Windows | Systematically tries every common breakout key combination — `ALT F4`, `CTRL ESC`, `GUI r`, `CTRL SHIFT ESC`, all `GUI+letter` combos, shell: URI handlers, and protocol handlers — to find a gap in kiosk restrictions. By @nocomp. |
+    | `BadGPT/` | Windows | Opens a fake ChatGPT interface as a social engineering or access demonstration. |
+
+    <Tip>
+      For background on kiosk breakout techniques, see the TrustedSec blog post on [kiosk/POS breakout keys in Windows](https://www.trustedsec.com/blog/kioskpos-breakout-keys-in-windows/).
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Android">
+    Scripts targeting Android devices with USB debugging or OTG keyboard support.
+
+    | File | Target | Description |
+    |---|---|---|
+    | `rickroll-android.txt` | Android | Opens the YouTube Rickroll in the Android browser and enters fullscreen using the `f` key. |
+    | `265_4_Digit_Pin_BF.txt` | Android | Attempts 265 common 4-digit PIN combinations with 30-second lockout delays between batches. Includes the top 65 most-used PINs and the 5 least-used PINs. |
+    | `Android_top65_4digit_pin_bf.txt` | Android | Focused brute-force using only the top 65 most common 4-digit Android PINs. |
+
+    The Android Rickroll script shows how Android-targeted payloads use `GUI b` to open the browser:
+
+    ```text rickroll-android.txt
+    REM Just another rickroll payload but for android
+    REM Credit: John Hickens
+    GUI b
+    DELAY 600
+    ENTER
+    DELAY 1000
+    CTRL l
+    DELAY 100
+    STRING https://www.youtube.com/watch?v=xm3YgoEiEDc
+    DELAY 100
+    ENTER
+    DELAY 500
+    STRING f
+    ```
+
+    `GUI b` opens the default browser on most Android launchers. `CTRL l` focuses the address bar. The final `STRING f` triggers fullscreen once the page loads.
+
+    <Warning>
+      The PIN brute-force scripts (`265_4_Digit_Pin_BF.txt`, `Android_top65_4digit_pin_bf.txt`) must only be run against devices you own or have explicit authorization to test. Android devices lock after repeated failed attempts and may wipe after a threshold is reached depending on the device policy.
+    </Warning>
+  </Accordion>
+
+  <Accordion title="macOS">
+    Scripts targeting macOS, including those in the dedicated macOS community subdirectories.
+
+    | File / Directory | Description |
+    |---|---|
+    | `OSX_Rickroll.txt` | Opens YouTube Rickroll at full volume via Terminal, then closes Terminal. |
+    | `RickRoll_Term_OSX.txt` | ASCII rickroll in macOS Terminal. |
+    | `RickRoll_YT_OSX.txt` | Browser rickroll for macOS. |
+    | `Party_Parrot_OSX.txt` | Party Parrot ASCII animation for macOS. |
+    | `Awesome_Flipper_OSX.txt` | macOS utility script. |
+    | `MacOS-47LeCoste/` | macOS payload collection by 47LeCoste. |
+    | `MacOS-narstybits/` | macOS payload collection by narstybits. |
+
+    macOS scripts use `GUI SPACE` to open Spotlight for launching Terminal, then use `osascript` for system-level actions like setting volume.
+  </Accordion>
+
+  <Accordion title="ChromeOS">
+    | Directory | Description |
+    |---|---|
+    | `chromeOS/` | Scripts targeting Chromebook devices. ChromeOS has a more restricted execution environment; scripts typically interact with the browser or use Linux app support (Crostini) if enabled. |
+  </Accordion>
+
+  <Accordion title="Community collections">
+    Subdirectories containing scripts collected from community contributors and other BadUSB repositories.
+
+    | Directory | Description |
+    |---|---|
+    | `Jakoby_BadUSB/` | Scripts from [I-Am-Jakoby](https://github.com/I-Am-Jakoby) — prolific BadUSB and PowerShell payload author. |
+    | `FLIZZ3R/` | Scripts from the FLIZZ3R collection. |
+    | `NullSec-BadUSB/` | Payloads from the NullSec community. |
+    | `FalsePhilosopher/` | Submodule pointing to [FalsePhilosopher's badusb repo](https://github.com/FalsePhilosopher/badusb) — pre-converted, download-and-go Flipper payloads. |
+    | `AbeNaws-BadUSB/` | Collection from AbeNaws. |
+    | `Aleff-BadUSB/` | Collection from Aleff. |
+    | `atomiczsec-BadUSB/` | Payloads from atomiczsec. |
+    | `emptythevoid-BadUSB/` | Collection from emptythevoid. |
+    | `InfoSecREDD_Payloads/` | Scripts from InfoSecREDD. |
+    | `Kavitate-BadUSB/` | Collection from Kavitate. |
+    | `s4dic - BadUSB/` | Scripts from s4dic. |
+    | `UNC0V3R3D-BadUSB-Collection/` | Larger aggregated community collection. |
+    | `BadUSB-FalsePhilosopher/` | Additional FalsePhilosopher scripts. |
+    | `BadUSB-MarkCyber/` | Scripts from MarkCyber. |
+    | `Flipper_Zero_Badusb_hack5_payloads/` | Hak5 USB Rubber Ducky payloads converted for Flipper Zero. |
+    | `DuckyScript_UDL/` | DuckyScript syntax highlighting definitions for editors. |
+
+    <Tip>
+      [FalsePhilosopher's badusb collection](https://github.com/FalsePhilosopher/badusb) is the best starting point if you want a large set of pre-converted, ready-to-run Flipper payloads. Everything in that repo has already been adapted from Hak5 format to Flipper DuckyScript.
+    </Tip>
+  </Accordion>
+
+</AccordionGroup>
+
+---
+
+## Compatible external repositories
+
+Many more scripts can be adapted from UberGuidoZ's other payload repositories. Some have already been converted and are included as submodules above.
+
+<CardGroup cols={2}>
+  <Card title="O.MG Devices payloads" icon="plug" href="https://github.com/UberGuidoZ/Hak5-OMG-Payloads">
+    Payloads originally written for the O.MG Cable and O.MG Plug — many work on Flipper after minor edits.
+  </Card>
+  <Card title="Hak5 USB Rubber Ducky payloads" icon="usb" href="https://github.com/UberGuidoZ/Hak5-USBRubberducky-Payloads">
+    The classic Hak5 Ducky Script library. Flipper uses a compatible dialect; most scripts run with no or minimal changes.
+  </Card>
+  <Card title="FalsePhilosopher collection" icon="download" href="https://github.com/FalsePhilosopher/badusb">
+    Pre-converted, download-and-go scripts specifically packaged for Flipper Zero.
+  </Card>
+  <Card title="BadUSB overview" icon="book" href="/badusb/overview">
+    DuckyScript syntax reference and instructions for loading and running scripts on your Flipper.
+  </Card>
+</CardGroup>
+
+<Note>
+  Also worth exploring: [I-Am-Jakoby](https://github.com/I-Am-Jakoby), [Øiphori3 (0iphor13)](https://github.com/0iphor13), [Hak5 payload blog](https://hak5.org/blogs/payloads), and [SIGUrger's FlipperZero BadUSB collection](https://github.com/SIGUrger/FlipperZeroBadusb).
+</Note>

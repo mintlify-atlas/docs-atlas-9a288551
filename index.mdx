@@ -1,97 +1,48 @@
 ---
-title: "Introduction"
-description: "Welcome to the new home for your documentation"
+title: "Flipper Zero Resource Hub"
+description: "Community-built collection of signal files, scripts, firmware guides, GPIO pinouts, and applications for the Flipper Zero multi-tool device."
 ---
 
-## Setting up
+The Flipper Zero Resource Hub is UberGuidoZ's playground — a curated collection of everything useful for getting the most out of your Flipper Zero. Whether you're replaying Sub-GHz signals, scripting BadUSB payloads, wiring up GPIO modules, or loading custom applications, you'll find tested files and guides here.
 
-Get your documentation site up and running in minutes.
-
-<Card
-  title="Start here"
-  icon="rocket"
-  href="/quickstart"
-  horizontal
->
-  Follow our three step quickstart guide.
-</Card>
-
-## Make it yours
-
-Design a docs site that looks great and empowers your users.
-
-<Columns cols={2}>
-  <Card
-    title="Edit locally"
-    icon="pen-to-square"
-    href="/development"
-  >
-    Edit your docs locally and preview them in real time.
+<CardGroup cols={2}>
+  <Card title="Get Started" icon="rocket" href="/introduction">
+    New to Flipper Zero? Start here for setup, firmware options, and first steps.
   </Card>
-  <Card
-    title="Customize your site"
-    icon="palette"
-    href="/essentials/settings"
-  >
-    Customize the design and colors of your site to match your brand.
+  <Card title="Wireless Signals" icon="wifi" href="/signals/sub-ghz">
+    Sub-GHz, Infrared, NFC, and RFID signal files ready to load on your device.
   </Card>
-    <Card
-    title="Set up navigation"
-    icon="map"
-    href="/essentials/navigation"
-  >
-    Organize your docs to help users find what they need and succeed with your product.
+  <Card title="BadUSB Payloads" icon="usb" href="/badusb/overview">
+    DuckyScript payloads for Windows, macOS, and Linux — collected and converted.
   </Card>
-  <Card
-    title="API documentation"
-    icon="terminal"
-    href="/api-reference/introduction"
-  >
-    Auto-generate API documentation from OpenAPI specifications.
+  <Card title="Hardware & GPIO" icon="microchip" href="/hardware/gpio-pinouts">
+    Pinout guides for ESP32, ESP8266, NRF24, Raspberry Pi, and sensors.
   </Card>
-</Columns>
+  <Card title="Applications (FAPs)" icon="puzzle-piece" href="/apps/installing-faps">
+    Install and build Flipper Application Packages for your firmware of choice.
+  </Card>
+  <Card title="Customization" icon="palette" href="/customization/graphics-animations">
+    Custom animations, music files, and Dolphin level management.
+  </Card>
+</CardGroup>
 
-## Create beautiful pages
+## Quick start
 
-Everything you need to create world-class documentation.
+<Steps>
+  <Step title="Set up your Flipper Zero">
+    Install qFlipper on your computer, connect your device via USB-C, and update to the latest firmware. See the [setup guide](/getting-started/setup) for details.
+  </Step>
+  <Step title="Choose your firmware">
+    The official firmware is a solid baseline. Unleashed and Momentum unlock additional frequencies and features. Compare options in the [firmware guide](/getting-started/firmware-options).
+  </Step>
+  <Step title="Load files from this repo">
+    Download files by right-clicking the **Raw** button on GitHub and saving. Transfer them to your SD card using qFlipper or the Flipper mobile app.
+  </Step>
+  <Step title="Explore by category">
+    Browse [Sub-GHz signals](/signals/sub-ghz), [IR remotes](/signals/infrared), [BadUSB scripts](/badusb/overview), or [GPIO modules](/hardware/gpio-pinouts) to find what you need.
+  </Step>
+</Steps>
 
-<Columns cols={2}>
-  <Card
-    title="Write with MDX"
-    icon="pen-fancy"
-    href="/essentials/markdown"
-  >
-    Use MDX to style your docs pages.
-  </Card>
-  <Card
-    title="Code samples"
-    icon="code"
-    href="/essentials/code"
-  >
-    Add sample code to demonstrate how to use your product.
-  </Card>
-  <Card
-    title="Images"
-    icon="image"
-    href="/essentials/images"
-  >
-    Display images and other media.
-  </Card>
-  <Card
-    title="Reusable snippets"
-    icon="recycle"
-    href="/essentials/reusable-snippets"
-  >
-    Write once and reuse across your docs.
-  </Card>
-</Columns>
-
-## Need inspiration?
-
-<Card
-  title="See complete examples"
-  icon="stars"
-  href="https://mintlify.com/customers"
->
-  Browse our showcase of exceptional documentation sites.
-</Card>
+<Note>
+  Looking for Infrared (IR) codes? The full IRDB lives at the [Flipper-IRDB repository](https://github.com/UberGuidoZ/Flipper-IRDB). Want to download just part of this repo? Use [DownGit](https://uberguidoz.github.io/DownGit/).
+</Note>

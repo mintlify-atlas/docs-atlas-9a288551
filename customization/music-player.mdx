@@ -1,0 +1,83 @@
+---
+title: "Music player"
+description: "Load RTTTL and FMF music files onto your Flipper Zero and play them through the built-in piezo speaker using the Music Player app."
+---
+
+The Flipper Zero has a built-in piezo speaker and a Music Player app that can play back melody files. The Music Player supports two formats: **RTTTL** (Ring Tone Text Transfer Language) stored as `.txt` files, and **FMF** (Flipper Music Format) stored as `.fmf` files.
+
+## RTTTL format
+
+RTTTL (Ring Tone Text Transfer Language) was originally created by Nokia for encoding ringtones as plain text. Each file contains a song name, default settings (tempo, duration, octave), and a comma-separated sequence of notes.
+
+```text example.txt
+Super Mario:d=4,o=5,b=200:e,e,p,e,p,c,e,p,g,p,g4,p,c,p,g4,p,e4
+```
+
+The format is compact, human-readable, and widely supported — thousands of RTTTL files exist online for popular songs, TV themes, and game music.
+
+<Note>
+  RTTTL files must be plain `.txt` files placed in the **root** of the `music_player/` folder on the SD card. Subdirectory organization does not work reliably. If you rename `.txt` to `.rtttl`, some firmware versions will read them from subfolders, but behavior varies — keep files in the root for consistent playback.
+</Note>
+
+## How to install music files
+
+<Steps>
+  <Step title="Download music files">
+    Download `.txt` (RTTTL) or `.fmf` files from one of the collections below, or write your own.
+  </Step>
+  <Step title="Connect Flipper to qFlipper">
+    Open qFlipper, connect your Flipper Zero, and navigate to the file browser.
+  </Step>
+  <Step title="Create music_player/ if needed">
+    On the SD card, look for a `music_player` folder. If it doesn't exist, create one. Some firmware builds do not create this folder automatically.
+  </Step>
+  <Step title="Copy files to the root of music_player/">
+    Place your `.txt` and `.fmf` files directly in the `music_player/` root — not inside subfolders.
+  </Step>
+  <Step title="Open the Music Player app on Flipper">
+    On your Flipper, go to **Applications → Music Player** (or find it in the app list depending on your firmware). Select a file and press the center button to play.
+  </Step>
+</Steps>
+
+## What's included in this repo
+
+The `Music_Player/` directory in this repository is organized into several categories:
+
+<AccordionGroup>
+  <Accordion title="Arcade_Tones/">
+    Sounds and melodies from classic arcade games, recreated in RTTTL format.
+  </Accordion>
+  <Accordion title="Theme_Songs/">
+    TV and movie theme songs converted to RTTTL.
+  </Accordion>
+  <Accordion title="RTTTL_DUMP/">
+    A large collection of miscellaneous RTTTL tone files sourced from various places.
+  </Accordion>
+  <Accordion title="Original_Files/">
+    Original compositions created specifically for the Flipper Zero.
+  </Accordion>
+  <Accordion title="flipnoise/">
+    Music files for use with the flipnoise app.
+  </Accordion>
+</AccordionGroup>
+
+## Finding more music files
+
+<CardGroup cols={2}>
+  <Card title="neverfa11ing — FlipperMusicRTTTL" icon="music" href="https://github.com/neverfa11ing/FlipperMusicRTTTL">
+    A large community-sourced collection of RTTTL files for the Flipper Zero.
+  </Card>
+  <Card title="0XIII0 — FMF collection" icon="music" href="https://github.com/0XIII0/Flipper-Zero/tree/main/music_player/fmf">
+    A growing collection of FMF (Flipper Music Format) files with higher fidelity than RTTTL.
+  </Card>
+  <Card title="Merwin's Ringtone Search" icon="search" href="http://ringtone.vulc.in/Default.aspx">
+    Over 800 MIDI and RTTTL ringtones searchable by song name.
+  </Card>
+  <Card title="Adam's RTTTL Player (online)" icon="play" href="https://adamonsoon.github.io/rtttl-play/">
+    Test and preview RTTTL files in your browser before copying them to the Flipper. Also useful for writing your own tones.
+  </Card>
+</CardGroup>
+
+<Tip>
+  Many sites that hosted Nokia ringtones in the early 2000s published RTTTL format — searching for a song title with "RTTTL" will often turn up ready-to-use files.
+</Tip>
